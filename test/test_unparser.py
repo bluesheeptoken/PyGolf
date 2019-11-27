@@ -139,11 +139,21 @@ async def func(things):
         )
 
     def test_unparse_BinOp(self):
-        node = extract_node("a + 2")
+        node = extract_node("4*(a + 2)")
 
         self.assertEqual(
             self.unparser.unparse_BinOp(node),
-            "a+2"
+            "4*(a+2)"
+        )
+
+        self.assertEqual(
+            self.unparser.unparse_BinOp(extract_node("(1 + 2) + 3")),
+            "1+2+3"
+        )
+
+        self.assertEqual(
+            self.unparser.unparse_BinOp(extract_node("(1 + 2) * 3")),
+            "(1+2)*3"
         )
 
     def test_unparse_BoolOP(self):
