@@ -81,7 +81,6 @@ class Unparser():
         return f"{self.sep*indent}assert {self.unparse(node.test)}"
 
     def unparse_Assign(self, node, indent=0):
-        from astroid import Starred, Tuple
         if isinstance(node.targets[0], Tuple) and \
             len(node.targets[0].elts) == 1 and \
             isinstance(node.targets[0].elts[0], Starred):
