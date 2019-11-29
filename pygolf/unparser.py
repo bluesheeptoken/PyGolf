@@ -128,18 +128,15 @@ class Unparser():
 
         statement = ""
 
-        if isinstance(node.left, BinOp) and operators_level[node.op] > operators_level[node.left.op]:
-            statement += f"({self.unparse(node.left)})"
-        else:
-            statement += f"{self.unparse(node.left)}"
+        def unparse_child(parent_node, child_node):
+            if isinstance(child_node, BinOp) and operators_level[parent_node.op] > operators_level[child_node.op]:
+                return f"({self.unparse(child_node)})"
+            else:
+                return f"{self.unparse(child_node)}"
 
+        statement += unparse_child(node, node.left)
         statement += node.op
-
-        if isinstance(node.right, BinOp) and operators_level[node.op] > operators_level[node.right.op]:
-            print(node)
-            statement += f"({self.unparse(node.right)})"
-        else:
-            statement += f"{self.unparse(node.right)}"
+        statement += unparse_child(node, node.right)
 
         return statement
 
@@ -151,8 +148,8 @@ class Unparser():
                 statement += f"{self.unparse(target)}{self.space_before_kw(target)}{node.op}"
             else:
                 statement += f"{self.space_after_kw(target)}{self.unparse(target)}"
-            if i != len(node.values) - 1:
-                statement += f"{self.space_before_kw(target)}{node.op}"
+                if i != len(node.values) - 1:
+                    statement += f"{self.space_before_kw(target)}{node.op}"
 
         return statement
 
@@ -184,7 +181,15 @@ class Unparser():
 
 
     def unparse_Compare(self, node, indent=0):
-        return f"{self.unparse(node.left)}{''.join(op[0] + self.unparse(op[1]) for op in node.ops)}"
+        statement = self.unparse(node.left)
+        last_arg = node.left
+        for op, arg in node.ops:
+            if op in ('in', 'not in', 'is', 'is not'):
+                statement += f" {op}{self.space_after_kw(arg)}{self.unparse(arg)}"
+            else:
+                statement += op + self.unparse(arg)
+
+        return statement
 
     def unparse_Comprehension(self, node, indent=0):
         statement = f"for {self.unparse(node.target)}" \
@@ -256,8 +261,13 @@ class Unparser():
         return self.unparse_for(node, False, indent)
 
     def unparse_FormattedValue(self, node, indent=0):
-        unparsed_spec = self.unparse(node.format_spec.values[0]).strip("'")
-        return f"{{{self.unparse(node.value)}:{unparsed_spec}}}"
+        unparsed_node = self.unparse(node.value).strip("'")
+        spec = node.format_spec.values[0]
+
+        if spec is not None and spec.value != "''":
+            unparsed_spec = self.unparse(spec).strip("'")
+            return f"{{{unparsed_node}:{unparsed_spec}}}"
+        return f"{{{unparsed_node}}}"
 
     def unparse_FunctionDef(self, node, indent=0):
         return self.unparse_function_def(node, False, indent)
@@ -270,7 +280,7 @@ class Unparser():
         return f"{self.sep*indent}global {','.join(node.names)}"
 
     def unparse_If(self, node, indent=0):
-        statement = f"{self.sep*indent}if{self.space_after_kw(node.test)}{self.unparse(node.test)}:"
+        statement = f"{self.sep*indent}if{self.space_after_kw(node.test)}{self.unparse(node.test)}:" \
             + f"{self.unparse_block(node.body, indent)}"
         if node.orelse:
             statement += f"\n{self.sep*indent}else:{self.unparse_block(node.orelse, indent)}"
@@ -384,6 +394,8 @@ class Unparser():
         return statement
 
     def unparse_Tuple(self, node, indent=0):
+        if isinstance(node.parent, Compare):
+            return f"({self.sep*indent}{','.join(map(self.unparse, node.elts))})"
         return self.sep*indent + ",".join(map(self.unparse, node.elts))
 
     def unparse_UnaryOp(self, node, indent=0):

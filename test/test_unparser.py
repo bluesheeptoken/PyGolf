@@ -196,6 +196,11 @@ class A(B,C):
             "a<=2>b"
         )
 
+        self.assertEqual(
+            self.unparser.unparse_Compare(extract_node("3 not in (1, 2, 3)")),
+            "3 not in(1,2,3)"
+        )
+
     def test_unparse_Comprehension(self):
         node = extract_node("[i for i in range(10) if i < 5 if i > 8]").generators[0]
 
