@@ -5,6 +5,7 @@ import re
 def create_const_node(value):
     return astroid.Const(value)
 
+
 def create_format_spec_node(node, value, format_spec):
     specifications = astroid.JoinedStr(
         lineno=node.lineno,
@@ -39,13 +40,7 @@ class FormatToFString:
             col_offset=node.col_offset,
             parent=node.parent,
         )
-        formatted_value_node = astroid.FormattedValue(
-            lineno=node.lineno,
-            col_offset=node.col_offset,
-            parent=node.parent,
-        )
 
-        joined_node = astroid.extract_node("f'The best {language} version is {version:.2f}'")
         constants = re.split("{[^{]*}", node.func.expr.value)
         specs = re.findall("(?<={)[^{]*(?=})", node.func.expr.value)
 
@@ -63,4 +58,3 @@ class FormatToFString:
 
     def predicate(node):
         return isinstance(node.func, astroid.Attribute) and node.func.attrname == "format"
-
