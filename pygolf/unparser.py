@@ -299,7 +299,7 @@ class Unparser():
         return f"{self.sep*indent}import {','.join(map(self.unparse_alias_import, node.names))}"
 
     def unparse_ImportFrom(self, node, indent=0):
-        return f"{self.sep*indent}from {'.'*node.level}{node.modname} " \
+        return f"{self.sep*indent}from {'.'*node.level if node.level is not None else ''}{node.modname} " \
             + f"import {','.join(map(self.unparse_alias_import, node.names))}"
 
     def unparse_Index(self, node, indent=0):

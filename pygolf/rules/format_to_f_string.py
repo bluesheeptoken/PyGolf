@@ -1,5 +1,6 @@
 import astroid
 import re
+from .astroid_rule import AstroidRule
 
 
 def create_const_node(value):
@@ -31,7 +32,7 @@ def create_format_spec_node(node, value, format_spec):
     return formatted_value_node
 
 
-class FormatToFString:
+class FormatToFString(AstroidRule):
     on_node = astroid.Call
 
     def transform(node):
