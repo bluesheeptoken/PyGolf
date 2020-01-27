@@ -1,7 +1,6 @@
 import unittest
 from pygolf.rules.format_to_f_string import FormatToFString
 from pygolf.unparser import Unparser
-from pygolf.errors.should_be_reduced_exception import ShouldBeReducedException
 import astroid
 
 
