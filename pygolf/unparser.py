@@ -1,6 +1,7 @@
 import astroid as ast
-from pygolf.errors.should_be_reduced_exception import ShouldBeReducedException
+
 from pygolf.errors.python_2_code_detected import Python2CodeDetected
+from pygolf.errors.should_be_reduced_exception import ShouldBeReducedException
 
 
 class Unparser:
