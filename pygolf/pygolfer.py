@@ -1,4 +1,5 @@
 import astroid as ast
+
 from pygolf.rules.format_to_f_string import FormatToFString
 from pygolf.unparser import Unparser
 
