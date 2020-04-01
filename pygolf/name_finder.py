@@ -31,4 +31,3 @@ class NameFinder:
             next_names.append(self.pop_next_name())
         self.current_index = initial_index
         return next_names
-
