@@ -1,5 +1,7 @@
-import astroid
 import re
+
+import astroid
+
 from .astroid_rule import AstroidRule
 
 
