@@ -9,24 +9,19 @@ def create_const_node(value):
 
 def create_format_spec_node(node, value, format_spec):
     specifications = astroid.JoinedStr(
-        lineno=node.lineno,
-        col_offset=node.col_offset,
-        parent=node.parent,
+        lineno=node.lineno, col_offset=node.col_offset, parent=node.parent,
     )
 
     formatted_value_node = astroid.FormattedValue(
-        lineno=node.lineno,
-        col_offset=node.col_offset,
-        parent=node.parent
+        lineno=node.lineno, col_offset=node.col_offset, parent=node.parent
     )
     if format_spec:
-        specifications.postinit(values=[astroid.Const(format_spec.replace(':', ''))])
+        specifications.postinit(values=[astroid.Const(format_spec.replace(":", ""))])
     else:
         specifications.postinit(values=[astroid.Const("''")])
 
     formatted_value_node.postinit(
-        value=astroid.Const(value.name),
-        format_spec=specifications
+        value=astroid.Const(value.name), format_spec=specifications
     )
 
     return formatted_value_node
@@ -37,9 +32,7 @@ class FormatToFString(AstroidRule):
 
     def transform(node):
         f_string_node = astroid.JoinedStr(
-            lineno=node.lineno,
-            col_offset=node.col_offset,
-            parent=node.parent,
+            lineno=node.lineno, col_offset=node.col_offset, parent=node.parent,
         )
 
         constants = re.split("{[^{]*}", node.func.expr.value)
@@ -58,4 +51,6 @@ class FormatToFString(AstroidRule):
         return f_string_node
 
     def predicate(node):
-        return isinstance(node.func, astroid.Attribute) and node.func.attrname == "format"
+        return (
+            isinstance(node.func, astroid.Attribute) and node.func.attrname == "format"
+        )

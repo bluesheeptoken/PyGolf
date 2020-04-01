@@ -3,9 +3,9 @@ from pygolf.errors.should_be_reduced_exception import ShouldBeReducedException
 from pygolf.errors.python_2_code_detected import Python2CodeDetected
 
 
-class Unparser():
+class Unparser:
     def __init__(self):
-        self.sep = ' '
+        self.sep = " "
 
     def unparse(self, node, indent=0):
         method = getattr(self, "unparse_" + node.__class__.__name__)
@@ -19,11 +19,11 @@ class Unparser():
 
     def unparse_block(self, block, indent=0):
         if self.has_block(block):
-            return '\n' + '\n'.join(map(lambda x: self.unparse(x, indent + 1), block))
-        return ';'.join(map(self.unparse, block))
+            return "\n" + "\n".join(map(lambda x: self.unparse(x, indent + 1), block))
+        return ";".join(map(self.unparse, block))
 
     def unparse_comprehension_generators(self, generators, indent=0):
-        stmnt = ''
+        stmnt = ""
 
         for i, generator in enumerate(generators):
             stmnt += self.unparse(generator)
@@ -33,30 +33,38 @@ class Unparser():
         return stmnt
 
     def unparse_for(self, for_node, is_async, indent=0):
-        for_stmnt = f"{self.sep*indent}{'async ' if is_async else ''}" \
-            + f"for {self.unparse(for_node.target)} in{self.space_after_kw(for_node.iter)}" \
+        for_stmnt = (
+            f"{self.sep*indent}{'async ' if is_async else ''}"
+            + f"for {self.unparse(for_node.target)} in{self.space_after_kw(for_node.iter)}"
             + f"{self.unparse(for_node.iter)}:{self.unparse_block(for_node.body, indent)}"
+        )
 
         if for_node.orelse:
-            for_stmnt += f"\n{self.sep*indent}else:" \
-                         f"{self.unparse_block(for_node.orelse, indent)}"
+            for_stmnt += (
+                f"\n{self.sep*indent}else:"
+                f"{self.unparse_block(for_node.orelse, indent)}"
+            )
 
         return for_stmnt
 
     def unparse_function_def(self, node, is_async, indent=0):
         if node.decorators is not None:
-            stmt = self.unparse(node.decorators, indent) + '\n'
+            stmt = self.unparse(node.decorators, indent) + "\n"
         else:
             stmt = ""
-        stmt += f"{self.sep*indent}{'async ' if is_async else ''}def " \
-                f"{node.name}({self.unparse(node.args)}):{self.unparse_block(node.body, indent)}"
+        stmt += (
+            f"{self.sep*indent}{'async ' if is_async else ''}def "
+            f"{node.name}({self.unparse(node.args)}):{self.unparse_block(node.body, indent)}"
+        )
 
         return stmt
 
     def unparse_with(self, node, is_async, indent=0):
-        return f"{self.sep*indent}{'async ' if is_async else ''}with " \
-            + f"{','.join(map(self.unparse_with_item, node.items))}:" \
+        return (
+            f"{self.sep*indent}{'async ' if is_async else ''}with "
+            + f"{','.join(map(self.unparse_with_item, node.items))}:"
             + self.unparse_block(node.body, indent)
+        )
 
     def unparse_with_item(self, node):
         item, alias = node
@@ -69,7 +77,7 @@ class Unparser():
 
     def unparse_Arguments(self, node, indent=0):
         number_non_default_args = len(node.args) - len(node.defaults)
-        return ','.join(
+        return ",".join(
             self.unparse(arg)
             if i < number_non_default_args
             else f"{self.unparse(arg)}={self.unparse(node.defaults[i-number_non_default_args])}"
@@ -82,12 +90,16 @@ class Unparser():
         return f"{self.sep*indent}assert {self.unparse(node.test)}"
 
     def unparse_Assign(self, node, indent=0):
-        if isinstance(node.targets[0], ast.Tuple) and \
-                len(node.targets[0].elts) == 1 and \
-                isinstance(node.targets[0].elts[0], ast.Starred):
+        if (
+            isinstance(node.targets[0], ast.Tuple)
+            and len(node.targets[0].elts) == 1
+            and isinstance(node.targets[0].elts[0], ast.Starred)
+        ):
             return f"{self.sep*indent}{self.unparse(node.targets[0])},={self.unparse(node.value)}"
-        return f"{self.sep*indent}{'='.join(map(self.unparse, node.targets))}" \
-               f"={self.unparse(node.value)}"
+        return (
+            f"{self.sep*indent}{'='.join(map(self.unparse, node.targets))}"
+            f"={self.unparse(node.value)}"
+        )
 
     def unparse_AssignAttr(self, node, indent=0):
         return f"{self.sep*indent}{self.unparse(node.expr)}.{node.attrname}"
@@ -125,14 +137,16 @@ class Unparser():
             "*": 5,
             "//": 5,
             "*": 5,
-            "%": 5
+            "%": 5,
         }
 
         stmnt = ""
 
         def unparse_child(parent_node, child_node):
-            if isinstance(child_node, ast.BinOp) and \
-                    operators_level[parent_node.op] > operators_level[child_node.op]:
+            if (
+                isinstance(child_node, ast.BinOp)
+                and operators_level[parent_node.op] > operators_level[child_node.op]
+            ):
                 return f"({self.unparse(child_node)})"
             else:
                 return f"{self.unparse(child_node)}"
@@ -148,7 +162,9 @@ class Unparser():
 
         for i, target in enumerate(node.values):
             if i == 0:
-                stmnt += f"{self.unparse(target)}{self.space_before_kw(target)}{node.op}"
+                stmnt += (
+                    f"{self.unparse(target)}{self.space_before_kw(target)}{node.op}"
+                )
             else:
                 stmnt += f"{self.space_after_kw(target)}{self.unparse(target)}"
                 if i != len(node.values) - 1:
@@ -169,7 +185,7 @@ class Unparser():
 
     def unparse_ClassDef(self, node, indent=0):
         if node.decorators is not None:
-            stmnt = self.unparse(node.decorators, indent) + '\n'
+            stmnt = self.unparse(node.decorators, indent) + "\n"
         else:
             stmnt = ""
 
@@ -186,7 +202,7 @@ class Unparser():
         stmnt = self.unparse(node.left)
 
         for op, arg in node.ops:
-            if op in ('in', 'not in', 'is', 'is not'):
+            if op in ("in", "not in", "is", "is not"):
                 stmnt += f" {op}{self.space_after_kw(arg)}{self.unparse(arg)}"
             else:
                 stmnt += op + self.unparse(arg)
@@ -194,9 +210,11 @@ class Unparser():
         return stmnt
 
     def unparse_Comprehension(self, node, indent=0):
-        stmnt = f"for {self.unparse(node.target)}" \
-                f"{self.space_before_kw(node.target)}" \
-                f"in{self.space_after_kw(node.iter)}{self.unparse(node.iter)}"
+        stmnt = (
+            f"for {self.unparse(node.target)}"
+            f"{self.space_before_kw(node.target)}"
+            f"in{self.space_after_kw(node.iter)}{self.unparse(node.iter)}"
+        )
         if stmnt is not None:
             for i, if_stmnt in enumerate(node.ifs):
                 if i == 0:
@@ -213,7 +231,9 @@ class Unparser():
         return f"{self.sep*indent}continue"
 
     def unparse_Decorators(self, node, indent=0):
-        return '\n'.join(f"{self.sep*indent}@{self.unparse(decorator)}" for decorator in node.nodes)
+        return "\n".join(
+            f"{self.sep*indent}@{self.unparse(decorator)}" for decorator in node.nodes
+        )
 
     def unparse_DelAttr(self, node, indent=0):
         return f"{self.unparse(node.expr)}.{node.attrname}"
@@ -225,16 +245,17 @@ class Unparser():
         return f"{self.sep*indent}del {','.join(map(self.unparse, node.targets))}"
 
     def unparse_Dict(self, node, indent=0):
-        dict_values = ','.join(
-            self.unparse(key) + ':' + self.unparse(value)
-            for key, value in node.items
+        dict_values = ",".join(
+            self.unparse(key) + ":" + self.unparse(value) for key, value in node.items
         )
         return f"{self.sep*indent}{{{dict_values}}}"
 
     def unparse_DictComp(self, node, indent=0):
-        return f"{self.sep*indent}{{{self.unparse(node.key)}:{self.unparse(node.value)}" \
-               f"{self.space_before_kw(node.value)}" \
-               f"{self.unparse_comprehension_generators(node.generators)}}}"
+        return (
+            f"{self.sep*indent}{{{self.unparse(node.key)}:{self.unparse(node.value)}"
+            f"{self.space_before_kw(node.value)}"
+            f"{self.unparse_comprehension_generators(node.generators)}}}"
+        )
 
     def unparse_DictUnpack(self, node, indent=0):
         return f"{self.sep*indent}**"
@@ -258,7 +279,7 @@ class Unparser():
         return f"{self.sep*indent}{self.unparse(node.value)}"
 
     def unparse_ExtSlice(self, node, indent=0):
-        return ','.join(map(self.unparse, node.dims))
+        return ",".join(map(self.unparse, node.dims))
 
     def unparse_For(self, node, indent=0):
         return self.unparse_for(node, False, indent)
@@ -276,31 +297,42 @@ class Unparser():
         return self.unparse_function_def(node, False, indent)
 
     def unparse_GeneratorExp(self, node, indent=0):
-        return f"{self.sep*indent}({self.unparse(node.elt)}{self.space_before_kw(node.elt)}" + \
-            f"{self.unparse_comprehension_generators(node.generators)})"
+        return (
+            f"{self.sep*indent}({self.unparse(node.elt)}{self.space_before_kw(node.elt)}"
+            + f"{self.unparse_comprehension_generators(node.generators)})"
+        )
 
     def unparse_Global(self, node, indent=0):
         return f"{self.sep*indent}global {','.join(node.names)}"
 
     def unparse_If(self, node, indent=0):
-        stmnt = f"{self.sep*indent}if{self.space_after_kw(node.test)}{self.unparse(node.test)}:" \
+        stmnt = (
+            f"{self.sep*indent}if{self.space_after_kw(node.test)}{self.unparse(node.test)}:"
             + f"{self.unparse_block(node.body, indent)}"
+        )
         if node.orelse:
-            stmnt += f"\n{self.sep*indent}else:{self.unparse_block(node.orelse, indent)}"
+            stmnt += (
+                f"\n{self.sep*indent}else:{self.unparse_block(node.orelse, indent)}"
+            )
         return stmnt
 
     def unparse_IfExp(self, node, indent=0):
-        return f"{self.sep*indent}{self.unparse(node.body)}{self.space_before_kw(node.body)}" \
-            + f"if{self.space_after_kw(node.test)}{self.unparse(node.test)}" \
-            + f"{self.space_after_kw(node.test)}else" \
+        return (
+            f"{self.sep*indent}{self.unparse(node.body)}{self.space_before_kw(node.body)}"
+            + f"if{self.space_after_kw(node.test)}{self.unparse(node.test)}"
+            + f"{self.space_after_kw(node.test)}else"
             + f"{self.space_after_kw(node.orelse)}{self.unparse(node.orelse)}"
+        )
 
     def unparse_Import(self, node, indent=0):
         return f"{self.sep*indent}import {','.join(map(self.unparse_alias_import, node.names))}"
 
     def unparse_ImportFrom(self, node, indent=0):
-        return f"{self.sep*indent}from {'.'*node.level if node.level is not None else ''}{node.modname} " \
+        return (
+            f"{self.sep*indent}from "
+            + f"{'.'*node.level if node.level is not None else ''}{node.modname} "
             + f"import {','.join(map(self.unparse_alias_import, node.names))}"
+        )
 
     def unparse_Index(self, node, indent=0):
         return self.unparse(node.value)
@@ -319,8 +351,10 @@ class Unparser():
         return f"{self.sep*indent}[{','.join(map(self.unparse, node.elts))}]"
 
     def unparse_ListComp(self, node, indent=0):
-        return f"{self.sep*indent}[{self.unparse(node.elt)}{self.space_before_kw(node.elt)}" \
+        return (
+            f"{self.sep*indent}[{self.unparse(node.elt)}{self.space_before_kw(node.elt)}"
             + f"{self.unparse_comprehension_generators(node.generators)}]"
+        )
 
     def unparse_Module(self, node, indent=0):
         separator = "\n" if self.has_block(node.body) else ";"
@@ -360,8 +394,10 @@ class Unparser():
         return f"{self.sep*indent}{{{','.join(map(self.unparse, node.elts))}}}"
 
     def unparse_SetComp(self, node, indent=0):
-        return f"{self.sep*indent}{{{self.unparse(node.elt)}{self.space_before_kw(node.elt)}" \
+        return (
+            f"{self.sep*indent}{{{self.unparse(node.elt)}{self.space_before_kw(node.elt)}"
             + f"{self.unparse_comprehension_generators(node.generators)}}}"
+        )
 
     def unparse_Slice(self, node, indent=0):
         stmnt = ""
@@ -381,11 +417,13 @@ class Unparser():
         return f"*{self.unparse(node.value)}"
 
     def unparse_Subscript(self, node, indent=0):
-        return f"{self.sep*indent}{self.unparse(node.value)}[{self.unparse(node.slice)}]"
+        return (
+            f"{self.sep*indent}{self.unparse(node.value)}[{self.unparse(node.slice)}]"
+        )
 
     def unparse_TryExcept(self, node, indent=0):
         stmnt = f"{self.sep*indent}try:{self.unparse_block(node.body)}\n"
-        stmnt += '\n'.join(map(self.unparse, node.handlers))
+        stmnt += "\n".join(map(self.unparse, node.handlers))
         if node.orelse:
             return f"{stmnt}\nelse:{self.unparse_block(node.orelse)}"
         return stmnt
@@ -408,11 +446,15 @@ class Unparser():
         pass
 
     def unparse_While(self, node, indent=0):
-        stmnt = f"{self.sep*indent}while {self.unparse(node.test)}:" \
+        stmnt = (
+            f"{self.sep*indent}while {self.unparse(node.test)}:"
             + self.unparse_block(node.body, indent)
+        )
 
         if node.orelse:
-            stmnt += f"\n{self.sep*indent}else:{self.unparse_block(node.orelse, indent)}"
+            stmnt += (
+                f"\n{self.sep*indent}else:{self.unparse_block(node.orelse, indent)}"
+            )
 
         return stmnt
 
@@ -426,10 +468,10 @@ class Unparser():
         return f"{self.sep*indent}yield from {self.unparse(node.value)}"
 
     def space_after_kw(self, node):
-        return '' if self._can_follow_reserved_keywords(node) else ' '
+        return "" if self._can_follow_reserved_keywords(node) else " "
 
     def space_before_kw(self, node):
-        return '' if self._can_be_before_reserved_keywords(node) else ' '
+        return "" if self._can_be_before_reserved_keywords(node) else " "
 
     def _can_follow_reserved_keywords(self, node):
         unparsed = self.unparse(node)
@@ -452,4 +494,5 @@ class Unparser():
                 ast.With,
                 ast.While,
             ]
+
         return any(is_block(node) for node in block)
