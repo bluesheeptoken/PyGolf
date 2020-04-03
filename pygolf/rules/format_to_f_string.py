@@ -4,6 +4,7 @@ from typing import *
 import astroid as ast
 
 from .astroid_rule import AstroidRule
+from .version import Version
 
 
 def create_format_spec_node(
@@ -31,19 +32,19 @@ def create_format_spec_node(
 class FormatToFString(AstroidRule):
     on_node = ast.Call
 
-    def transform(node):
+    def transform(self) -> ast.JoinedStr:
         f_string_node = ast.JoinedStr(
-            lineno=node.lineno, col_offset=node.col_offset, parent=node.parent,
+            lineno=self.lineno, col_offset=self.col_offset, parent=self.parent,
         )
 
-        constants: List[str] = re.split("{[^{]*}", node.func.expr.value)
-        specs = re.findall("(?<={)[^{]*(?=})", node.func.expr.value)
+        constants: List[str] = re.split("{[^{]*}", self.func.expr.value)
+        specs = re.findall("(?<={)[^{]*(?=})", self.func.expr.value)
 
         values = []
         for i, const in enumerate(constants):
             values.append(ast.Const(const))
             if i != len(constants) - 1:
-                formatted_node = create_format_spec_node(node, node.args[i], specs[i])
+                formatted_node = create_format_spec_node(self, self.args[i], specs[i])
 
                 values.append(formatted_node)
 
@@ -51,5 +52,8 @@ class FormatToFString(AstroidRule):
 
         return f_string_node
 
-    def predicate(node):
-        return isinstance(node.func, ast.Attribute) and node.func.attrname == "format"
+    def predicate(self) -> bool:
+        return isinstance(self.func, ast.Attribute) and self.func.attrname == "format"
+
+    def since(self) -> Version:
+        return Version("3.6")

@@ -4,3 +4,6 @@ class AstroidRule:
 
     def predicate(self):
         raise NotImplementedError
+
+    def since(self):
+        raise NotImplementedError
