@@ -393,7 +393,7 @@ else:pass""",
 
         self.assertEqual(self.unparser.unparse_UnaryOp(node), "-3")
 
-    def test_unparse_UnaryOp(self):
+    def test_unparse_While(self):
         while_else = extract_node(
             """while True:pass
 else:pass
