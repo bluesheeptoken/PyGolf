@@ -24,3 +24,6 @@ class RenameName(AstroidRule):
 
     def since(self) -> Version:
         return Version.min_version()
+
+    def __repr__(self) -> str:
+        return f"RenameName(old_name:{self.old_name}, new_name:{self.new_name})"

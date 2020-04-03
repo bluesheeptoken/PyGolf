@@ -57,3 +57,6 @@ class FormatToFString(AstroidRule):
 
     def since(self) -> Version:
         return Version("3.6")
+
+    def __repr__(self) -> str:
+        return "FormatToFString"

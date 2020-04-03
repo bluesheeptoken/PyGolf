@@ -19,7 +19,6 @@ class AssignNameOptimizer:
             name_finder.add_potential_used_name(name)
         for name in self.names:
             next_name: str = name_finder.next_name()
-            print(next_name)
             if len(next_name) < len(name):
                 name_finder.pop_next_name()
                 rules.append(RenameAssignName(name, next_name))

@@ -7,3 +7,5 @@ class AstroidRule:
 
     def since(self):
         raise NotImplementedError
+
+    on_node = None
