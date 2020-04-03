@@ -53,7 +53,7 @@ class FormatToFString(AstroidRule):
         return f_string_node
 
     def predicate(self, node: on_node) -> bool:
-        return isinstance(self.node, ast.Attribute) and self.node.attrname == "format"
+        return isinstance(node.func, ast.Attribute) and node.func.attrname == "format"
 
     def since(self) -> Version:
         return Version("3.6")

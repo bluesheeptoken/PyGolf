@@ -22,5 +22,5 @@ class TestFormatToFString(unittest.TestCase):
         unparser = Unparser()
 
         self.assertEqual(
-            unparser.unparse(node), "f'The best {language} version is {version:.2f}'"
+            "f'The best {language} version is {version:.2f}'", unparser.unparse(node)
         )
