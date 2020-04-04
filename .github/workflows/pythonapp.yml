@@ -33,6 +33,10 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
         black . --check
         isort --check
+    - name: Check static types with mypy
+      run: |
+        pip install mypy
+        mypy pygolf
     - name: Test with pytest
       run: |
         pip install pytest
