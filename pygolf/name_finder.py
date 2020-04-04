@@ -31,3 +31,9 @@ class NameFinder:
             next_names.append(self.pop_next_name())
         self.current_index = initial_index
         return next_names
+
+    def add_potential_used_name(self, name: str) -> bool:
+        if len(name) == 1:
+            self.already_used_names.add(name)
+            return True
+        return False

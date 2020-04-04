@@ -32,19 +32,19 @@ def create_format_spec_node(
 class FormatToFString(AstroidRule):
     on_node = ast.Call
 
-    def transform(self) -> ast.JoinedStr:
+    def transform(self, node: on_node) -> ast.JoinedStr:
         f_string_node = ast.JoinedStr(
-            lineno=self.lineno, col_offset=self.col_offset, parent=self.parent,
+            lineno=node.lineno, col_offset=node.col_offset, parent=node.parent,
         )
 
-        constants: List[str] = re.split("{[^{]*}", self.func.expr.value)
-        specs = re.findall("(?<={)[^{]*(?=})", self.func.expr.value)
+        constants: List[str] = re.split("{[^{]*}", node.func.expr.value)
+        specs = re.findall("(?<={)[^{]*(?=})", node.func.expr.value)
 
         values = []
         for i, const in enumerate(constants):
             values.append(ast.Const(const))
             if i != len(constants) - 1:
-                formatted_node = create_format_spec_node(self, self.args[i], specs[i])
+                formatted_node = create_format_spec_node(node, node.args[i], specs[i])
 
                 values.append(formatted_node)
 
@@ -52,8 +52,11 @@ class FormatToFString(AstroidRule):
 
         return f_string_node
 
-    def predicate(self) -> bool:
-        return isinstance(self.func, ast.Attribute) and self.func.attrname == "format"
+    def predicate(self, node: on_node) -> bool:
+        return isinstance(node.func, ast.Attribute) and node.func.attrname == "format"
 
     def since(self) -> Version:
         return Version("3.6")
+
+    def __repr__(self) -> str:
+        return "FormatToFString"

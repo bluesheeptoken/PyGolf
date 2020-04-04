@@ -7,8 +7,11 @@ from pygolf.unparser import Unparser
 
 
 class TestFormatToFString(unittest.TestCase):
+    format_to_f_string_rule = FormatToFString()
     astroid.MANAGER.register_transform(
-        FormatToFString.on_node, FormatToFString.transform, FormatToFString.predicate
+        format_to_f_string_rule.on_node,
+        format_to_f_string_rule.transform,
+        format_to_f_string_rule.predicate,
     )
 
     def test_rule(self):
@@ -19,5 +22,5 @@ class TestFormatToFString(unittest.TestCase):
         unparser = Unparser()
 
         self.assertEqual(
-            unparser.unparse(node), "f'The best {language} version is {version:.2f}'"
+            "f'The best {language} version is {version:.2f}'", unparser.unparse(node)
         )
