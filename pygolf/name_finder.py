@@ -3,7 +3,7 @@ from typing import List, Set
 
 
 class NameFinder:
-    def __init__(self):
+    def __init__(self) -> None:
         self.names: List[str] = list(string.ascii_lowercase + string.ascii_uppercase)
         self.current_index: int = 0
         self.already_used_names: Set[str] = set()

@@ -27,6 +27,10 @@ def _apply_rules(rules: List[AstroidRule]) -> None:
         ast.MANAGER.register_transform(rule.on_node, rule.transform, rule.predicate)
 
 
+def base_rules() -> List[AstroidRule]:
+    return [FormatToFString()]
+
+
 class Pygolfer:
     def reduce(self, file_path):
         old_ast = read_ast(file_path)

@@ -5,7 +5,7 @@ from pygolf.rules import AstroidRule, RenameAssignName, RenameName
 
 
 class AssignNameOptimizer:
-    def __init__(self):
+    def __init__(self) -> None:
         self.names: List[str] = []
 
     def add_name(self, name: str) -> None:
