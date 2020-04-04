@@ -6,7 +6,7 @@ from astroid.node_classes import NodeNG
 from pygolf.abstract_optimizer.assign_name_optimizer import AssignNameOptimizer
 from pygolf.errors.python_2_code_detected import Python2CodeDetected
 from pygolf.name_finder import NameFinder
-from pygolf.rules.astroid_rule import AstroidRule
+from pygolf.rules import AstroidRule
 
 
 class AbstractOptimizer:

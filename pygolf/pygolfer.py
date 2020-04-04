@@ -5,12 +5,11 @@ from astroid.node_classes import NodeNG
 
 from pygolf.abstract_optimizer.abstract_optimizer import AbstractOptimizer
 from pygolf.name_finder import NameFinder
-from pygolf.rules.astroid_rule import AstroidRule
-from pygolf.rules.format_to_f_string import FormatToFString
+from pygolf.rules import AstroidRule, FormatToFString
 from pygolf.unparser import Unparser
 
 
-def generate_rules(ast: "NodeNG") -> List[AstroidRule]:
+def generate_rules(ast: NodeNG) -> List[AstroidRule]:
     name_finder = NameFinder()
     optimizer = AbstractOptimizer(name_finder)
     optimizer.visit(ast)

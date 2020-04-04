@@ -1,9 +1,7 @@
 from typing import *
 
-from ..name_finder import NameFinder
-from ..rules.astroid_rule import AstroidRule
-from ..rules.rename_assign_name import RenameAssignName
-from ..rules.rename_name import RenameName
+from pygolf.name_finder import NameFinder
+from pygolf.rules import AstroidRule, RenameAssignName, RenameName
 
 
 class AssignNameOptimizer:
