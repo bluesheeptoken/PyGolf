@@ -6,7 +6,7 @@ from astroid.node_classes import NodeNG
 from pygolf.abstract_optimizer.assign_name_optimizer import AssignNameOptimizer
 from pygolf.errors.python_2_code_detected import Python2CodeDetected
 from pygolf.name_finder import NameFinder
-from pygolf.rules.astroid_rule import AstroidRule
+from pygolf.rules import AstroidRule
 
 
 class AbstractOptimizer:
@@ -20,7 +20,7 @@ class AbstractOptimizer:
     def visit(self, node: Optional[NodeNG]) -> None:
         if node is not None:
             method = getattr(self, "visit_" + node.__class__.__name__)
-            return method(node)
+            method(node)
 
     def visit_list(self, nodes: Optional[List[NodeNG]]) -> None:
         if nodes is not None:
@@ -29,7 +29,7 @@ class AbstractOptimizer:
 
     def visit_for(self, node: Union[ast.AsyncFor, ast.For]) -> None:
         self.visit(node.target)
-        self.visit(node.iter)  # mypy ignore
+        self.visit(node.iter)
         self.visit_list(node.body)
         self.visit_list(node.orelse)
 
@@ -41,7 +41,7 @@ class AbstractOptimizer:
         self.visit(node.args)
         self.visit_list(node.decorators)
 
-    def visit_with(self, node: Union[ast.AsyncWith, ast.With]):
+    def visit_with(self, node: Union[ast.AsyncWith, ast.With]) -> None:
         for item in node.items:
             self.visit_list(item)
         self.visit_list(node.body)
@@ -73,10 +73,10 @@ class AbstractOptimizer:
         self.visit_for(node)
 
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> None:
-        return self.visit_function_def(node)
+        self.visit_function_def(node)
 
     def visit_AsyncWith(self, node: ast.AsyncWith) -> None:
-        return self.visit_with(node)
+        self.visit_with(node)
 
     def visit_Attribute(self, node: ast.Attribute) -> None:
         # optimize node.attrname
@@ -111,7 +111,8 @@ class AbstractOptimizer:
 
     def visit_Compare(self, node: ast.Compare) -> None:
         self.visit(node.left)
-        self.visit_list(list(map(lambda x: x[1], node.ops)))
+        for _, node0 in node.ops:
+            self.visit(node0)
 
     def visit_Comprehension(self, node: ast.Comprehension) -> None:
         self.visit(node.target)
@@ -172,14 +173,14 @@ class AbstractOptimizer:
         self.visit(node.dims)
 
     def visit_For(self, node: ast.For) -> None:
-        return self.visit_for(node)
+        self.visit_for(node)
 
     def visit_FormattedValue(self, node: ast.FormattedValue) -> None:
         self.visit(node.value)
         self.visit(node.format_spec)
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
-        return self.visit_function_def(node)
+        self.visit_function_def(node)
 
     def visit_GeneratorExp(self, node: ast.GeneratorExp) -> None:
         self.visit(node.elt)
@@ -205,7 +206,7 @@ class AbstractOptimizer:
         pass
 
     def visit_Index(self, node: ast.Index) -> None:
-        return self.visit(node.value)
+        self.visit(node.value)
 
     def visit_JoinedStr(self, node: ast.JoinedStr) -> None:
         self.visit_list(node.values)
@@ -292,7 +293,7 @@ class AbstractOptimizer:
         self.visit_list(node.orelse)
 
     def visit_With(self, node: ast.With) -> None:
-        return self.visit_with(node)
+        self.visit_with(node)
 
     def visit_Yield(self, node: ast.Yield) -> None:
         self.visit(node.value)

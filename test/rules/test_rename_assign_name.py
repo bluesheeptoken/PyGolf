@@ -2,7 +2,7 @@ import unittest
 
 import astroid
 
-from pygolf.rules.rename_assign_name import RenameAssignName
+from pygolf.rules import RenameAssignName
 from pygolf.unparser import Unparser
 
 

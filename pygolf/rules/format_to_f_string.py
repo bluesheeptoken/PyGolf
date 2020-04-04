@@ -32,7 +32,7 @@ def create_format_spec_node(
 class FormatToFString(AstroidRule):
     on_node = ast.Call
 
-    def transform(self, node: on_node) -> ast.JoinedStr:
+    def transform(self, node: ast.Call) -> ast.JoinedStr:
         f_string_node = ast.JoinedStr(
             lineno=node.lineno, col_offset=node.col_offset, parent=node.parent,
         )
@@ -52,7 +52,7 @@ class FormatToFString(AstroidRule):
 
         return f_string_node
 
-    def predicate(self, node: on_node) -> bool:
+    def predicate(self, node: ast.Call) -> bool:
         return isinstance(node.func, ast.Attribute) and node.func.attrname == "format"
 
     def since(self) -> Version:

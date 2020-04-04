@@ -2,7 +2,7 @@ import unittest
 
 import astroid
 
-from pygolf.rules.format_to_f_string import FormatToFString
+from pygolf.rules import FormatToFString
 from pygolf.unparser import Unparser
 
 
