@@ -3,18 +3,9 @@ from typing import *
 import astroid as ast
 from astroid.node_classes import NodeNG
 
-from pygolf.abstract_optimizer.abstract_optimizer import AbstractOptimizer
-from pygolf.name_finder import NameFinder
+from pygolf.optimization_phases import all_phases
 from pygolf.rules import AstroidRule, FormatToFString
 from pygolf.unparser import Unparser
-
-
-def generate_rules(ast: NodeNG) -> List[AstroidRule]:
-    name_finder = NameFinder()
-    optimizer = AbstractOptimizer(name_finder)
-    optimizer.visit(ast)
-    rules = optimizer.generate_optimizations_rules()
-    return rules
 
 
 def _apply_rules(rules: List[AstroidRule]) -> None:
@@ -28,10 +19,12 @@ def base_rules() -> List[AstroidRule]:
 
 class Pygolfer:
     def reduce(self, code: str) -> str:
-        old_ast: NodeNG = ast.parse(code)
-        rules: List[AstroidRule] = generate_rules(old_ast)
-        _apply_rules(rules)
-        new_ast: NodeNG = ast.parse(code)
-
+        module: NodeNG = ast.parse(code)
         unparser: Unparser = Unparser()
-        return unparser.unparse(new_ast)
+
+        for phase in all_phases:
+            rules = phase.generate_rules(module)
+            _apply_rules(rules)
+            module = ast.parse(unparser.unparse(module))
+
+        return unparser.unparse(module)
