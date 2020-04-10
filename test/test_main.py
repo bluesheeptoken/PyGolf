@@ -2,8 +2,6 @@ import argparse
 import tempfile
 import unittest
 
-import pyperclip  # type: ignore
-
 from pygolf.__main__ import get_arguments_warning, read_input_code, reduce
 
 
@@ -21,13 +19,6 @@ class TestMain(unittest.TestCase):
         name_space.code = "print('code')"
         self.assertEqual(read_input_code(name_space), "print('code')")
         name_space.code = None
-
-        name_space.clipboard = True
-        old_text_in_cb = pyperclip.paste()
-        pyperclip.copy("print('pyperclip')")
-        self.assertEqual(read_input_code(name_space), "print('pyperclip')")
-        pyperclip.copy(old_text_in_cb)
-        name_space.clipboard = None
 
         with tempfile.NamedTemporaryFile("w+") as fp:
             fp.write("print('input_path')")

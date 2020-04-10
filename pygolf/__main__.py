@@ -2,6 +2,7 @@ from argparse import ArgumentParser, Namespace
 from typing import *
 
 import pyperclip  # type: ignore
+from astroid import AstroidSyntaxError
 
 from pygolf.pygolfer import Pygolfer
 
@@ -20,7 +21,7 @@ def reduce(code: str) -> Optional[str]:
     pygolfer = Pygolfer()
     try:
         return pygolfer.reduce(code)
-    except:
+    except AstroidSyntaxError:
         return None
 
 
@@ -94,7 +95,6 @@ def parse_arguments(argv: Optional[Sequence[str]] = None) -> Namespace:
 
 
 def main(argv: Optional[Sequence[str]] = None) -> None:
-
     arguments = parse_arguments(argv)
 
     for warning in get_arguments_warning(arguments):
