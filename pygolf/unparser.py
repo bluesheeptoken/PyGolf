@@ -304,8 +304,7 @@ class Unparser:
 
     def unparse_FormattedValue(self, node: ast.FormattedValue, indent: int = 0) -> str:
         unparsed_node = self.unparse(node.value).strip("'")
-        spec = node.format_spec.values[0]
-
+        spec = node.format_spec.values[0] if node.format_spec is not None else None
         if spec is not None and spec.value != "''":
             unparsed_spec = self.unparse(spec).strip("'")
             return f"{{{unparsed_node}:{unparsed_spec}}}"
