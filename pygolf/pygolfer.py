@@ -17,11 +17,6 @@ def generate_rules(ast: NodeNG) -> List[AstroidRule]:
     return rules
 
 
-def read_ast(file_path):
-    with open(file_path) as f:
-        return ast.parse("".join(f.readlines()))
-
-
 def _apply_rules(rules: List[AstroidRule]) -> None:
     for rule in rules:
         ast.MANAGER.register_transform(rule.on_node, rule.transform, rule.predicate)
@@ -32,11 +27,11 @@ def base_rules() -> List[AstroidRule]:
 
 
 class Pygolfer:
-    def reduce(self, file_path):
-        old_ast = read_ast(file_path)
-        rules = generate_rules(old_ast)
+    def reduce(self, code: str) -> str:
+        old_ast: NodeNG = ast.parse(code)
+        rules: List[AstroidRule] = generate_rules(old_ast)
         _apply_rules(rules)
-        new_ast = read_ast(file_path)
+        new_ast: NodeNG = ast.parse(code)
 
-        unparser = Unparser()
+        unparser: Unparser = Unparser()
         return unparser.unparse(new_ast)

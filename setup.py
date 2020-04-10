@@ -29,5 +29,5 @@ setup(
     keywords="golfcode reduce golf",
     python_requires=">=3.5, <4",
     install_requires=["astroid"],
-    entry_points={"console_scripts": ["pygolf = pygolf.__main__:main",],},
+    entry_points={"console_scripts": ["pygolf = pygolf.__main__:main"]},
 )
