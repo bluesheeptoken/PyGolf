@@ -27,11 +27,11 @@ def base_rules() -> List[AstroidRule]:
 
 
 class Pygolfer:
-    def reduce(self, code: str):
-        old_ast = ast.parse(code)
-        rules = generate_rules(old_ast)
+    def reduce(self, code: str) -> str:
+        old_ast: NodeNG = ast.parse(code)
+        rules: List[AstroidRule] = generate_rules(old_ast)
         _apply_rules(rules)
-        new_ast = ast.parse(code)
+        new_ast: NodeNG = ast.parse(code)
 
-        unparser = Unparser()
+        unparser: Unparser = Unparser()
         return unparser.unparse(new_ast)
