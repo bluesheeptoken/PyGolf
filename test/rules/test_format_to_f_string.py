@@ -16,11 +16,11 @@ class TestFormatToFString(unittest.TestCase):
 
     def test_rule(self):
         node = astroid.extract_node(
-            "'The best {} version is {:.2f}'.format(language, version)"
+            "'The best {} version is {:.2f} !'.format(language, version)"
         )
 
         unparser = Unparser()
 
         self.assertEqual(
-            "f'The best {language} version is {version:.2f}'", unparser.unparse(node)
+            "f'The best {language} version is {version:.2f} !'", unparser.unparse(node)
         )

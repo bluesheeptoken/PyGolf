@@ -10,20 +10,20 @@ from .version import Version
 def create_format_spec_node(
     node: ast.Call, value: ast.Name, format_spec: str
 ) -> ast.FormattedValue:
-    specifications = ast.JoinedStr(
-        lineno=node.lineno, col_offset=node.col_offset, parent=node.parent,
-    )
-
     formatted_value_node = ast.FormattedValue(
         lineno=node.lineno, col_offset=node.col_offset, parent=node.parent
     )
+    specifications: Optional[ast.JoinedStr]
     if format_spec:
+        specifications = ast.JoinedStr(
+            lineno=node.lineno, col_offset=node.col_offset, parent=node.parent,
+        )
         specifications.postinit(values=[ast.Const(format_spec.replace(":", ""))])
     else:
-        specifications.postinit(values=[ast.Const("''")])
+        specifications = None
 
     formatted_value_node.postinit(
-        value=ast.Const(value.name), format_spec=specifications
+        value=ast.Name(value.name), format_spec=specifications
     )
 
     return formatted_value_node
