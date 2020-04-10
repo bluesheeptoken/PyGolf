@@ -14,7 +14,7 @@ def main():
     with open(args.file_path) as f:
         old_code = "".join(f.readlines())
 
-    reduced_code = reducer.reduce(args.file_path)
+    reduced_code = reducer.reduce(old_code)
 
     print("## Old code ##")
     print(old_code)
