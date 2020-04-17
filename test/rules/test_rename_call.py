@@ -1,5 +1,5 @@
 import unittest
-from test.helper import register_rule
+from test.rules.helper import register_rule
 
 import astroid
 
