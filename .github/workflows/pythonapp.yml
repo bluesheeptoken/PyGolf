@@ -39,5 +39,5 @@ jobs:
         mypy pygolf
     - name: Test with pytest
       run: |
-        pip install pytest
+        pip install pytest pytest-xdist
         pytest

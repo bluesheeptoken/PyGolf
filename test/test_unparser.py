@@ -1,12 +1,13 @@
 import unittest
 
-import astroid
+import pytest
 from astroid import extract_node, parse
 
 from pygolf.errors.should_be_reduced_exception import ShouldBeReducedException
 from pygolf.unparser import Unparser
 
 
+@pytest.mark.last
 class TestUnparser(unittest.TestCase):
 
     unparser = Unparser()
