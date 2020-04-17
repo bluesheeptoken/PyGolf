@@ -15,7 +15,7 @@ class AbstractOptimizer:
         self.optimizers: List[Optimizer] = [AssignNameOptimizer(name_finder)]
 
     def generate_optimizations_rules(self) -> List[AstroidRule]:
-        rules = []
+        rules: List[AstroidRule] = []
         for optimizer in self.optimizers:
             rules += optimizer.generate_rules()
         return rules

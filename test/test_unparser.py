@@ -1,5 +1,6 @@
 import unittest
 
+import astroid
 from astroid import extract_node, parse
 
 from pygolf.errors.should_be_reduced_exception import ShouldBeReducedException
@@ -294,17 +295,9 @@ else:pass""",
         self.assertEqual(self.unparser.unparse_ListComp(node), "[2for x in range(10)]")
 
     def test_unparse_Module(self):
-        node = parse(
-            """for i in range(10):pass
-try:pass
-except E:pass
-"""
-        )
+        node = parse("print(2)")
         self.assertEqual(
-            self.unparser.unparse(node),
-            """for i in range(10):pass
-try:pass
-except E:pass""",
+            self.unparser.unparse(node), "print(2)",
         )
 
     def test_unparse_Nonlocal(self):
