@@ -16,7 +16,6 @@ class AssignNameOptimizer(Optimizer):
         self.names.append(name)
 
     def generate_rules(self) -> List[AstroidRule]:
-        print(self.names)
         rules: List[AstroidRule] = []
         for name in self.names:
             self.name_finder.add_potential_used_name(name)
