@@ -18,7 +18,7 @@ class AssignNameOptimizer(Optimizer):
     def generate_rules(self) -> List[AstroidRule]:
         rules: List[AstroidRule] = []
         for name in self.names:
-            self.name_finder.add_potential_used_name(name)
+            self.name_finder.remove_used_name(name)
         for name in self.names:
             next_name: str = self.name_finder.next_name()
             if len(next_name) < len(name):
