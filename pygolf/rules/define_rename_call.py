@@ -1,5 +1,4 @@
 import astroid as ast
-from astroid.node_classes import NodeNG
 
 from ..helper import walker
 from .astroid_rule import AstroidRule

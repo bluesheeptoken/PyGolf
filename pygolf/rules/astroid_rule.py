@@ -1,11 +1,21 @@
-class AstroidRule:
-    def transform(self, node):
+import abc
+
+from astroid.node_classes import NodeNG
+
+from pygolf.rules.version import Version
+
+
+class AstroidRule(metaclass=abc.ABCMeta):
+    @abc.abstractmethod
+    def transform(self, node: NodeNG) -> NodeNG:
         raise NotImplementedError
 
-    def predicate(self, node):
+    @abc.abstractmethod
+    def predicate(self, node: NodeNG) -> NodeNG:
         raise NotImplementedError
 
-    def since(self):
+    @abc.abstractmethod
+    def since(self) -> Version:
         raise NotImplementedError
 
     on_node = None
