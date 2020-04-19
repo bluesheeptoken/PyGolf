@@ -2,8 +2,8 @@ from typing import *
 
 import astroid as ast
 
-from pygolf.abstract_optimizer.optimizer import Optimizer
 from pygolf.name_finder import NameFinder
+from pygolf.optimizers.optimizer import Optimizer
 from pygolf.rules import AstroidRule, RenameAssignName, RenameName
 
 
@@ -16,7 +16,6 @@ class AssignNameOptimizer(Optimizer):
         self.names.append(name)
 
     def generate_rules(self) -> Iterator[AstroidRule]:
-        rules: List[AstroidRule] = []
         for name in self.names:
             self.name_finder.remove_used_name(name)
         for name in self.names:

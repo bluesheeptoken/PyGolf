@@ -11,7 +11,7 @@ from .optimizer import Optimizer
 from .rename_method_optimizer import RenameMethodOptimizer
 
 
-class AbstractOptimizer:
+class BatchOptimizer:
     def __init__(self, name_finder: NameFinder):
         self.name_finder: NameFinder = name_finder
         self.optimizers: List[Optimizer] = [

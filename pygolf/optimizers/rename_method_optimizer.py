@@ -2,8 +2,8 @@ from typing import *
 
 import astroid as ast
 
-from pygolf.abstract_optimizer.optimizer import Optimizer
 from pygolf.name_finder import NameFinder
+from pygolf.optimizers.optimizer import Optimizer
 from pygolf.rules import *
 
 _builtin_methods = __builtins__.keys()  # type: ignore

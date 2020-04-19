@@ -2,7 +2,7 @@ from unittest import TestCase, mock
 
 import astroid
 
-from pygolf.abstract_optimizer.assign_name_optimizer import AssignNameOptimizer
+from pygolf.optimizers.assign_name_optimizer import AssignNameOptimizer
 
 
 class TestAssignNameOptimizer(TestCase):
