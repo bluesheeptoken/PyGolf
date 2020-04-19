@@ -11,11 +11,13 @@ class TestDefineRenameCall(unittest.TestCase):
     def test_rule(self):
         unparser = Unparser()
 
-        with register_rule(DefineRenameCall("method_name", "new_method_name")):
-            node = astroid.parse("")
+        with register_rule(
+            DefineRenameCall("method_name", "new_method_name")
+        ) as transformer:
+            node = transformer.visit(astroid.parse(""))
             unparsed = unparser.unparse(node)
             self.assertEqual(unparsed, "new_method_name=method_name")
 
-            node = astroid.parse(unparsed)
+            node = transformer.visit(astroid.parse(unparsed))
             unparsed = unparser.unparse(node)
             self.assertEqual(unparsed, "new_method_name=method_name")

@@ -11,9 +11,11 @@ class TestFormatToFString(unittest.TestCase):
     def test_rule(self):
         unparser = Unparser()
 
-        with register_rule(FormatToFString()):
-            node = astroid.extract_node(
-                "'The best {} version is {:.2f} !'.format(language, version)"
+        with register_rule(FormatToFString()) as transformer:
+            node = transformer.visit(
+                astroid.parse(
+                    "'The best {} version is {:.2f} !'.format(language, version)"
+                )
             )
             self.assertEqual(
                 "f'The best {language} version is {version:.2f} !'",

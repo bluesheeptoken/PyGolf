@@ -11,14 +11,18 @@ class TestFormatToFString(unittest.TestCase):
     def test_rule(self):
         unparser = Unparser()
 
-        with register_rule(RangeForToComprehensionFor()):
+        with register_rule(RangeForToComprehensionFor()) as transformer:
 
-            node = astroid.extract_node("for i in range(2, 10, 5):print('hello world')")
+            node = transformer.visit(
+                astroid.parse("for i in range(2, 10, 5):print('hello world')")
+            )
             self.assertEqual(
                 unparser.unparse(node), "for i in'|'*2:print('hello world')"
             )
 
-            node = astroid.extract_node("for i in range(n):print('hello world')")
+            node = transformer.visit(
+                astroid.parse("for i in range(n):print('hello world')")
+            )
             self.assertEqual(
                 unparser.unparse(node), "for i in range(n):print('hello world')"
             )

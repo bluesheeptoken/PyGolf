@@ -11,7 +11,7 @@ from .optimizer import Optimizer
 from .rename_method_optimizer import RenameMethodOptimizer
 
 
-class AbstractOptimizer:
+class BatchOptimizer:
     def __init__(self, name_finder: NameFinder):
         self.name_finder: NameFinder = name_finder
         self.optimizers: List[Optimizer] = [
@@ -19,11 +19,9 @@ class AbstractOptimizer:
             RenameMethodOptimizer(name_finder),
         ]
 
-    def generate_optimizations_rules(self) -> List[AstroidRule]:
-        rules: List[AstroidRule] = []
+    def generate_optimizations_rules(self) -> Iterator[AstroidRule]:
         for optimizer in self.optimizers:
-            rules += optimizer.generate_rules()
-        return rules
+            yield from optimizer.generate_rules()
 
     def visit(self, node: NodeNG) -> None:
         for child in walker.walk(node):

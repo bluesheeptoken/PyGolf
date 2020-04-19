@@ -1,18 +1,14 @@
 from contextlib import contextmanager
 
-import astroid as ast
+from astroid.transforms import TransformVisitor
 
 from pygolf.rules import AstroidRule
 
 
 @contextmanager
 def register_rule(rule: AstroidRule) -> None:
-    ast.MANAGER.register_transform(
+    transformer: TransformVisitor = TransformVisitor()
+    transformer.register_transform(
         rule.on_node, rule.transform, rule.predicate,
     )
-    try:
-        yield None
-    finally:
-        ast.MANAGER.unregister_transform(
-            rule.on_node, rule.transform, rule.predicate,
-        )
+    yield transformer

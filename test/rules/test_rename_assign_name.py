@@ -11,6 +11,8 @@ class TestRenameAssign(unittest.TestCase):
     def test_rule(self):
         unparser = Unparser()
 
-        with register_rule(RenameAssignName("long_name", "very_short_name")):
-            node = astroid.extract_node("long_name,short_name=l")
+        with register_rule(
+            RenameAssignName("long_name", "very_short_name")
+        ) as transformer:
+            node = transformer.visit(astroid.parse("long_name,short_name=l"))
             self.assertEqual("very_short_name,short_name=l", unparser.unparse(node))
