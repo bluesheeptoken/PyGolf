@@ -8,14 +8,10 @@ from astroid import AstroidSyntaxError
 from pygolf.pygolfer import Pygolfer
 
 
-def stdout_output_message(old_code: str, new_code: str) -> str:
-    return f"""Shortened code:
----
-{new_code}
----
+def statistics(old_code: str, new_code: str) -> str:
+    return f"""-----
 Saved {len(old_code) - len(new_code)} characters
-The reduced code has {len(new_code)} characters
-"""
+The reduced code has {len(new_code)} characters"""
 
 
 def shorten(code: str) -> Optional[str]:
@@ -38,16 +34,18 @@ def read_input_code(arguments: Namespace) -> str:
 def output_code(arguments: Namespace, old_code: str, new_code: Optional[str]) -> None:
     if new_code is None:
         print("Input code is not a valid python code")
+        return
     elif arguments.clipboard:
         pyperclip.copy(new_code)
     elif arguments.code is not None:
-        print(stdout_output_message(old_code, new_code))
+        print(new_code)
     elif arguments.input_file is not None:
         if arguments.output_file:
             with open(arguments.output_file, "w") as fp:
                 fp.write(new_code)
         else:
-            print(stdout_output_message(old_code, new_code))
+            print(new_code)
+    print(statistics(old_code, new_code), file=sys.stderr)
 
 
 def get_arguments_warning(arguments: Namespace) -> Iterator[str]:
