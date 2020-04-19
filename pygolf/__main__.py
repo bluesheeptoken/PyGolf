@@ -18,10 +18,10 @@ The reduced code has {len(new_code)} characters
 """
 
 
-def reduce(code: str) -> Optional[str]:
+def shorten(code: str) -> Optional[str]:
     pygolfer = Pygolfer()
     try:
-        return pygolfer.reduce(code)
+        return pygolfer.shorten(code)
     except AstroidSyntaxError:
         return None
 
@@ -91,7 +91,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
 
     input_code = read_input_code(arguments)
 
-    reduced_code = reduce(input_code)
+    reduced_code = shorten(input_code)
 
     output_code(arguments, input_code, reduced_code)
 

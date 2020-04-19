@@ -2,13 +2,13 @@ import argparse
 import tempfile
 import unittest
 
-from pygolf.__main__ import get_arguments_warning, read_input_code, reduce
+from pygolf.__main__ import get_arguments_warning, read_input_code, shorten
 
 
 class TestMain(unittest.TestCase):
     def test_reduce(self):
-        self.assertEqual(reduce("print( 1 + 2 )"), "print(1+2)")
-        self.assertEqual(reduce("not valid code"), None)
+        self.assertEqual(shorten("print( 1 + 2 )"), "print(1+2)")
+        self.assertEqual(shorten("not valid code"), None)
 
     def test_read_input_code(self):
         name_space = argparse.Namespace()

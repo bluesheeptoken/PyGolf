@@ -18,7 +18,7 @@ def base_rules() -> List[AstroidRule]:
 
 
 class Pygolfer:
-    def reduce(self, code: str) -> str:
+    def shorten(self, code: str) -> str:
         module: NodeNG = ast.parse(code)
         unparser: Unparser = Unparser()
 
