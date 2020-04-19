@@ -15,7 +15,7 @@ class AssignNameOptimizer(Optimizer):
     def add_name(self, name: str) -> None:
         self.names.append(name)
 
-    def generate_rules(self) -> List[AstroidRule]:
+    def generate_rules(self) -> Iterator[AstroidRule]:
         rules: List[AstroidRule] = []
         for name in self.names:
             self.name_finder.remove_used_name(name)
@@ -23,9 +23,8 @@ class AssignNameOptimizer(Optimizer):
             next_name: str = self.name_finder.next_name()
             if len(next_name) < len(name):
                 self.name_finder.pop_next_name()
-                rules.append(RenameAssignName(name, next_name))
-                rules.append(RenameName(name, next_name))
-        return rules
+                yield RenameAssignName(name, next_name)
+                yield RenameName(name, next_name)
 
     def visit_AssignName(self, node: ast.AssignName) -> None:
         self.add_name(node.name)

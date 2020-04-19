@@ -1,4 +1,4 @@
-from typing import List
+from typing import Iterator
 
 from astroid.node_classes import NodeNG
 
@@ -8,5 +8,6 @@ from .phase import Phase
 
 
 class AlwaysApplyPhase(Phase):
-    def generate_rules(self, ast: NodeNG) -> List[AstroidRule]:
-        return [FormatToFString(), RangeForToComprehensionFor()]
+    def generate_rules(self, ast: NodeNG) -> Iterator[AstroidRule]:
+        yield FormatToFString()
+        yield RangeForToComprehensionFor()

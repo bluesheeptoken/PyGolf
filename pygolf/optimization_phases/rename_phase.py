@@ -1,4 +1,4 @@
-from typing import List
+from typing import Iterator
 
 from astroid.node_classes import NodeNG
 
@@ -10,9 +10,8 @@ from .phase import Phase
 
 
 class RenamePhase(Phase):
-    def generate_rules(self, ast: NodeNG) -> List[AstroidRule]:
+    def generate_rules(self, ast: NodeNG) -> Iterator[AstroidRule]:
         name_finder = NameFinder()
         optimizer = AbstractOptimizer(name_finder)
         optimizer.visit(ast)
-        rules = optimizer.generate_optimizations_rules()
-        return rules
+        yield from optimizer.generate_optimizations_rules()

@@ -50,7 +50,7 @@ def output_code(arguments: Namespace, old_code: str, new_code: Optional[str]) ->
             print(stdout_output_message(old_code, new_code))
 
 
-def get_arguments_warning(arguments: Namespace) -> Iterable[str]:
+def get_arguments_warning(arguments: Namespace) -> Iterator[str]:
     if arguments.input_file is None and arguments.output_file is not None:
         yield "argument `output_file` is set but not `input_file`, ignoring argument `output_file`"
 

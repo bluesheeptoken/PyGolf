@@ -1,3 +1,5 @@
+from typing import Iterator
+
 from astroid.node_classes import NodeNG
 
 
@@ -7,5 +9,5 @@ class Optimizer:
             method = getattr(self, f"visit_{node.__class__.__name__}")
             method(node)
 
-    def generate_rules(self):
+    def generate_rules(self) -> Iterator:
         raise NotImplementedError

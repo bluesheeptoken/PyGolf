@@ -19,11 +19,9 @@ class AbstractOptimizer:
             RenameMethodOptimizer(name_finder),
         ]
 
-    def generate_optimizations_rules(self) -> List[AstroidRule]:
-        rules: List[AstroidRule] = []
+    def generate_optimizations_rules(self) -> Iterator[AstroidRule]:
         for optimizer in self.optimizers:
-            rules += optimizer.generate_rules()
-        return rules
+            yield from optimizer.generate_rules()
 
     def visit(self, node: NodeNG) -> None:
         for child in walker.walk(node):
