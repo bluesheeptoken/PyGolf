@@ -1,5 +1,5 @@
 class Python2CodeDetected(Exception):
     def __init__(self, node):
         super().__init__(
-            f"{node} is supposed to be reduced by the golfer, please report a bug."
+            f"Pygolf only reduces python 3 code, however {node} has been found in AST."
         )

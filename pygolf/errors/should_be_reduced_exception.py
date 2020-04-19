@@ -1,5 +1,5 @@
 class ShouldBeReducedException(Exception):
     def __init__(self, detected_keyword):
         super().__init__(
-            f"Pygolf only reduces python 3 code, however {detected_keyword} was seen in the code."
+            f"{detected_keyword} is supposed to be reduced by the golfer, please report a bug."
         )
