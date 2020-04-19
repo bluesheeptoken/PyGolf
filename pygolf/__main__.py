@@ -1,3 +1,4 @@
+import sys
 from argparse import ArgumentParser, Namespace
 from typing import *
 
@@ -8,7 +9,7 @@ from pygolf.pygolfer import Pygolfer
 
 
 def stdout_output_message(old_code: str, new_code: str) -> str:
-    return f"""Reduced code:
+    return f"""Shortened code:
 ---
 {new_code}
 ---
@@ -30,7 +31,7 @@ def read_input_code(arguments: Namespace) -> str:
         return pyperclip.paste()  # type: ignore
     elif arguments.code is not None:
         return arguments.code  # type: ignore
-    with open(arguments.input_path) as fp:
+    with open(arguments.input_file) as fp:
         return "".join(fp.readlines())
 
 
@@ -41,53 +42,41 @@ def output_code(arguments: Namespace, old_code: str, new_code: Optional[str]) ->
         pyperclip.copy(new_code)
     elif arguments.code is not None:
         print(stdout_output_message(old_code, new_code))
-    elif arguments.input_path is not None:
-        if arguments.output_path:
-            with open(arguments.output_path, "w") as fp:
+    elif arguments.input_file is not None:
+        if arguments.output_file:
+            with open(arguments.output_file, "w") as fp:
                 fp.write(new_code)
         else:
             print(stdout_output_message(old_code, new_code))
 
 
-def get_arguments_warning(arguments: Namespace) -> List[str]:
-    warnings: List[str] = []
-
-    if arguments.input_path is None and arguments.output_path is not None:
-        warnings.append(
-            "argument `output_path` is set but not `input_path`, ignoring argument `output_path`"
-        )
-
-    return warnings
+def get_arguments_warning(arguments: Namespace) -> Iterable[str]:
+    if arguments.input_file is None and arguments.output_file is not None:
+        yield "argument `output_file` is set but not `input_file`, ignoring argument `output_file`"
 
 
 def parse_arguments(argv: Optional[Sequence[str]] = None) -> Namespace:
-    parser: ArgumentParser = ArgumentParser(description="PyGolf reduces the text")
+    parser: ArgumentParser = ArgumentParser(description="PyGolf shortens a Python code")
     code_input_group = parser.add_mutually_exclusive_group()
     code_input_group.add_argument(
-        "-c",
-        "--code",
-        help="Reduce code from argument and prints it in the stout",
-        type=str,
+        "-c", "--code", help="Shorten code from argument and print it", type=str,
     )
 
     code_input_group.add_argument(
-        "-cb",
-        "--clipboard",
-        help="Reduce code from clipboard and save it in clipboard",
-        action="store_true",
+        "-cb", "--clipboard", help="Shorten code in clipboard", action="store_true",
     )
 
     code_input_group.add_argument(
         "-i",
-        "--input_path",
-        help="Reduce code from clipboard and prints it to stdout or to --output_path",
+        "--input_file",
+        help="Shorten code from file code and print it to stdout or to --output_file",
         type=str,
     )
 
     parser.add_argument(
         "-o",
-        "--output_path",
-        help="Outputs the code to given output_path or stdout by default",
+        "--output_file",
+        help="Outputs the code to given output_file or stdout by default",
         nargs="?",
     )
 
