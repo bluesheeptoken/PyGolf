@@ -36,7 +36,8 @@ class RenameMethodOptimizer(Optimizer):
                 yield DefineRenameCall(method, next_name)
 
     def visit_Call(self, node: ast.Call) -> None:
-        self.add_name(node.func.name)
+        if isinstance(node.func, ast.Name):
+            self.add_name(node.func.name)
 
 
 if __name__ == "__main__":

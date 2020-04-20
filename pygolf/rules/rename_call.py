@@ -19,7 +19,11 @@ class RenameCall(AstroidRule):
         return new_call
 
     def predicate(self, node: NodeNG) -> bool:
-        return isinstance(node, ast.Call) and node.func.name == self.old_name
+        return (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.name == self.old_name
+        )
 
     def since(self) -> Version:
         return Version.min_version()

@@ -1,6 +1,5 @@
 import unittest
 
-import pytest
 from astroid import extract_node, parse
 
 from pygolf.errors.should_be_reduced_exception import ShouldBeReducedException
