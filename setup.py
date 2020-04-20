@@ -26,7 +26,7 @@ setup(
         "Programming Language :: Python :: 3.8",
     ],
     license="MIT",
-    packages=find_packages(),
+    packages=find_packages(exclude=["test"]),
     keywords="golfcode reduce golf",
     python_requires=">=3.6, <4",
     install_requires=["astroid"],
