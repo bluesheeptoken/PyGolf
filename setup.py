@@ -1,6 +1,6 @@
 from os import path
 
-from setuptools import setup
+from setuptools import find_packages, setup
 
 here = path.abspath(path.dirname(__file__))
 
@@ -21,13 +21,14 @@ setup(
         "Intended Audience :: Developers",
         "Topic :: Software Development :: Build Tools",
         "License :: OSI Approved :: MIT License",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
     ],
+    license="MIT",
+    packages=find_packages(),
     keywords="golfcode reduce golf",
-    python_requires=">=3.5, <4",
+    python_requires=">=3.6, <4",
     install_requires=["astroid"],
     entry_points={"console_scripts": ["pygolf = pygolf.__main__:main"]},
 )
