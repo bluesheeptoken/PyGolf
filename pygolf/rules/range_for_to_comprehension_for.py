@@ -2,7 +2,6 @@ import astroid as ast
 
 from ..helper import walker
 from .astroid_rule import AstroidRule
-from .version import Version
 
 
 def _create_for_node(old_for_node: ast.For, new_iter: ast.BinOp) -> ast.For:
@@ -57,9 +56,6 @@ class RangeForToComprehensionFor(AstroidRule):
                 break
 
         return not target_is_used
-
-    def since(self) -> Version:
-        return Version.min_version()
 
     def __repr__(self) -> str:
         return "RangeForToComprehensionFor"

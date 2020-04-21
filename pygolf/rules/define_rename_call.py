@@ -2,7 +2,6 @@ import astroid as ast
 
 from ..helper import walker
 from .astroid_rule import AstroidRule
-from .version import Version
 
 
 class DefineRenameCall(AstroidRule):
@@ -32,9 +31,6 @@ class DefineRenameCall(AstroidRule):
             ):
                 return False
         return True
-
-    def since(self) -> Version:
-        return Version.min_version()
 
     def __repr__(self) -> str:
         return f"DefineRenameCall(old_name:{self.old_name}, new_name:{self.new_name})"

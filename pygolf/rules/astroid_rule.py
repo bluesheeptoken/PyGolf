@@ -14,8 +14,7 @@ class AstroidRule(metaclass=abc.ABCMeta):
     def predicate(self, node: NodeNG) -> NodeNG:
         raise NotImplementedError
 
-    @abc.abstractmethod
     def since(self) -> Version:
-        raise NotImplementedError
+        return Version.min_version()
 
     on_node = None
