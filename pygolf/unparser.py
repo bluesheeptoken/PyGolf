@@ -171,7 +171,22 @@ class Unparser:
 
         stmnt += unparse_child(node, node.left)
         stmnt += node.op
-        stmnt += unparse_child(node, node.right)
+
+        if (
+            (
+                (isinstance(node.left, ast.Const) and isinstance(node.left.value, str))
+                or (
+                    not isinstance(node.left, ast.BinOp)
+                    and not isinstance(node.left, ast.Const)
+                )  # Possibly a string is returned, in doubt we have to put parenthesis
+            )
+            and node.op == "*"
+            and isinstance(node.right, ast.BinOp)
+            and node.right.op in ("*", "//", "%")
+        ):
+            stmnt += f"({unparse_child(node, node.right)})"
+        else:
+            stmnt += unparse_child(node, node.right)
 
         return stmnt
 
