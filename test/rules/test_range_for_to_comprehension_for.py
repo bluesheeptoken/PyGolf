@@ -7,7 +7,7 @@ from pygolf.rules import RangeForToComprehensionFor
 from pygolf.unparser import Unparser
 
 
-class TestFormatToFString(unittest.TestCase):
+class TestRangeForToComprehensionFor(unittest.TestCase):
     def test_rule(self):
         unparser = Unparser()
 
@@ -17,12 +17,19 @@ class TestFormatToFString(unittest.TestCase):
                 astroid.parse("for i in range(2, 10, 5):print('hello world')")
             )
             self.assertEqual(
-                unparser.unparse(node), "for i in'|'*2:print('hello world')"
+                unparser.unparse(node), "for i in range(2,10,5):print('hello world')"
+            )
+
+            node = transformer.visit(
+                astroid.parse("for i in range(1,n):print('hello world')")
+            )
+            self.assertEqual(
+                unparser.unparse(node), "for i in'|'*(n-1):print('hello world')"
             )
 
             node = transformer.visit(
                 astroid.parse("for i in range(n):print('hello world')")
             )
             self.assertEqual(
-                unparser.unparse(node), "for i in range(n):print('hello world')"
+                unparser.unparse(node), "for i in'|'*n:print('hello world')"
             )

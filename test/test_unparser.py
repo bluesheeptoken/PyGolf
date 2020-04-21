@@ -116,9 +116,9 @@ async def func(things):
         self.assertEqual(self.unparser.unparse_AugAssign(node), "a*=2")
 
     def test_unparse_BinOp(self):
-        node = extract_node("4*(a + 2)")
-
-        self.assertEqual(self.unparser.unparse_BinOp(node), "4*(a+2)")
+        self.assertEqual(
+            self.unparser.unparse_BinOp(extract_node("4*(a + 2)")), "4*(a+2)"
+        )
 
         self.assertEqual(
             self.unparser.unparse_BinOp(extract_node("(1 + 2) + 3")), "1+2+3"
@@ -126,6 +126,15 @@ async def func(things):
 
         self.assertEqual(
             self.unparser.unparse_BinOp(extract_node("(1 + 2) * 3")), "(1+2)*3"
+        )
+
+        self.assertEqual(
+            self.unparser.unparse_BinOp(extract_node("'a'*(5//n)")), "'a'*(5//n)"
+        )
+
+        self.assertEqual(
+            self.unparser.unparse_BinOp(extract_node("might_generate_string()*(5//n)")),
+            "might_generate_string()*(5//n)",
         )
 
     def test_unparse_BoolOP(self):

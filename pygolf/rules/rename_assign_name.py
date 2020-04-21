@@ -2,7 +2,6 @@ import astroid as ast
 from astroid.node_classes import NodeNG
 
 from .astroid_rule import AstroidRule
-from .version import Version
 
 
 class RenameAssignName(AstroidRule):
@@ -22,9 +21,6 @@ class RenameAssignName(AstroidRule):
 
     def predicate(self, node: NodeNG) -> bool:
         return isinstance(node, ast.AssignName) and node.name == self.old_name
-
-    def since(self) -> Version:
-        return Version.min_version()
 
     def __repr__(self) -> str:
         return f"RenameAssignName(old_name:{self.old_name}, new_name:{self.new_name})"
