@@ -4,7 +4,6 @@ import astroid as ast
 from astroid.node_classes import NodeNG
 
 from pygolf.errors.python_2_code_detected import Python2CodeDetected
-from pygolf.errors.should_be_reduced_exception import ShouldBeReducedException
 
 
 class Unparser:
@@ -19,6 +18,7 @@ class Unparser:
         import_name, alias = node
         if alias is None:
             return import_name
+
         return f"{import_name} as {alias}"
 
     def unparse_block(self, block: List[NodeNG], indent: int = 0) -> str:
@@ -26,9 +26,7 @@ class Unparser:
             return "\n" + "\n".join(map(lambda x: self.unparse(x, indent + 1), block))
         return ";".join(map(self.unparse, block))
 
-    def unparse_comprehension_generators(
-        self, generators: List[ast.Comprehension], indent: int = 0
-    ) -> str:
+    def unparse_comprehension_generators(self, generators: List[ast.Comprehension], indent: int = 0) -> str:
         stmnt = ""
 
         for i, generator in enumerate(generators):
@@ -38,9 +36,7 @@ class Unparser:
 
         return stmnt
 
-    def unparse_for(
-        self, for_node: Union[ast.AsyncFor, ast.For], is_async: bool, indent: int = 0
-    ) -> str:
+    def unparse_for(self, for_node: Union[ast.AsyncFor, ast.For], is_async: bool, indent: int = 0) -> str:
         for_stmnt = (
             f"{self.sep*indent}{'async ' if is_async else ''}"
             + f"for {self.unparse(for_node.target)} in{self.space_after_kw(for_node.iter)}"
@@ -48,18 +44,12 @@ class Unparser:
         )
 
         if for_node.orelse:
-            for_stmnt += (
-                f"\n{self.sep*indent}else:"
-                f"{self.unparse_block(for_node.orelse, indent)}"
-            )
+            for_stmnt += f"\n{self.sep*indent}else:{self.unparse_block(for_node.orelse, indent)}"
 
         return for_stmnt
 
     def unparse_function_def(
-        self,
-        node: Union[ast.AsyncFunctionDef, ast.FunctionDef],
-        is_async: bool,
-        indent: int = 0,
+        self, node: Union[ast.AsyncFunctionDef, ast.FunctionDef], is_async: bool, indent: int = 0,
     ) -> str:
         if node.decorators is not None:
             stmt = self.unparse(node.decorators, indent) + "\n"
@@ -72,25 +62,21 @@ class Unparser:
 
         return stmt
 
-    def unparse_with(
-        self, node: Union[ast.AsyncWith, ast.With], is_async: bool, indent: int = 0
-    ) -> str:
+    def unparse_with(self, node: Union[ast.AsyncWith, ast.With], is_async: bool, indent: int = 0) -> str:
         return (
             f"{self.sep*indent}{'async ' if is_async else ''}with "
             + f"{','.join(map(self.unparse_with_item, node.items))}:"
             + self.unparse_block(node.body, indent)
         )
 
-    def unparse_with_item(
-        self, node: List[Tuple[NodeNG, Optional[ast.AssignName]]]
-    ) -> str:
+    def unparse_with_item(self, node: List[Tuple[NodeNG, Optional[ast.AssignName]]]) -> str:
         item, alias = node
         if alias is None:
             return self.unparse(item)
         return f"{self.unparse(item)} as {self.unparse(alias)}"
 
     def unparse_AnnAssign(self, node: ast.AnnAssign, indent: int = 0) -> str:
-        raise ShouldBeReducedException(node.__class__.__name__)
+        return f"{self.sep*indent}{node.target.name}={self.unparse(node.value)}"  # ignore annotation
 
     def unparse_Arguments(self, node: ast.Arguments, indent: int = 0) -> str:
         number_non_default_args = len(node.args) - len(node.defaults)
@@ -113,10 +99,7 @@ class Unparser:
             and isinstance(node.targets[0].elts[0], ast.Starred)
         ):
             return f"{self.sep*indent}{self.unparse(node.targets[0])},={self.unparse(node.value)}"
-        return (
-            f"{self.sep*indent}{'='.join(map(self.unparse, node.targets))}"
-            f"={self.unparse(node.value)}"
-        )
+        return f"{self.sep*indent}{'='.join(map(self.unparse, node.targets))}={self.unparse(node.value)}"
 
     def unparse_AssignAttr(self, node: ast.AssignAttr, indent: int = 0) -> str:
         return f"{self.sep*indent}{self.unparse(node.expr)}.{node.attrname}"
@@ -127,9 +110,7 @@ class Unparser:
     def unparse_AsyncFor(self, node: ast.AsyncFor, indent: int = 0) -> str:
         return self.unparse_for(node, True, indent)
 
-    def unparse_AsyncFunctionDef(
-        self, node: ast.AsyncFunctionDef, indent: int = 0
-    ) -> str:
+    def unparse_AsyncFunctionDef(self, node: ast.AsyncFunctionDef, indent: int = 0) -> str:
         return self.unparse_function_def(node, True, indent)
 
     def unparse_AsyncWith(self, node: ast.AsyncWith, indent: int = 0) -> str:
@@ -161,13 +142,9 @@ class Unparser:
         stmnt = ""
 
         def unparse_child(node: ast.BinOp, child_node: NodeNG) -> str:
-            if (
-                isinstance(child_node, ast.BinOp)
-                and operators_level[node.op] > operators_level[child_node.op]
-            ):
+            if isinstance(child_node, ast.BinOp) and operators_level[node.op] > operators_level[child_node.op]:
                 return f"({self.unparse(child_node)})"
-            else:
-                return f"{self.unparse(child_node)}"
+            return f"{self.unparse(child_node)}"
 
         stmnt += unparse_child(node, node.left)
         stmnt += node.op
@@ -176,8 +153,7 @@ class Unparser:
             (
                 (isinstance(node.left, ast.Const) and isinstance(node.left.value, str))
                 or (
-                    not isinstance(node.left, ast.BinOp)
-                    and not isinstance(node.left, ast.Const)
+                    not isinstance(node.left, ast.BinOp) and not isinstance(node.left, ast.Const)
                 )  # Possibly a string is returned, in doubt we have to put parenthesis
             )
             and node.op == "*"
@@ -195,9 +171,7 @@ class Unparser:
 
         for i, target in enumerate(node.values):
             if i == 0:
-                stmnt += (
-                    f"{self.unparse(target)}{self.space_before_kw(target)}{node.op}"
-                )
+                stmnt += f"{self.unparse(target)}{self.space_before_kw(target)}{node.op}"
             else:
                 stmnt += f"{self.space_after_kw(target)}{self.unparse(target)}"
                 if i != len(node.values) - 1:
@@ -258,15 +232,16 @@ class Unparser:
         return stmnt
 
     def unparse_Const(self, node: ast.Const, indent: int = 0) -> str:
-        return f"'{node.value}'" if "str" in node.pytype() else str(node.value)
+        if "str" in node.pytype():
+            quotes = "'''" if "\n" in node.value else "'"
+            return f"{quotes}{node.value}{quotes}"
+        return str(node.value)
 
     def unparse_Continue(self, node: ast.Continue, indent: int = 0) -> str:
         return f"{self.sep*indent}continue"
 
     def unparse_Decorators(self, node: ast.Decorators, indent: int = 0) -> str:
-        return "\n".join(
-            f"{self.sep*indent}@{self.unparse(decorator)}" for decorator in node.nodes
-        )
+        return "\n".join(f"{self.sep*indent}@{self.unparse(decorator)}" for decorator in node.nodes)
 
     def unparse_DelAttr(self, node: ast.DelAttr, indent: int = 0) -> str:
         return f"{self.unparse(node.expr)}.{node.attrname}"
@@ -278,9 +253,7 @@ class Unparser:
         return f"{self.sep*indent}del {','.join(map(self.unparse, node.targets))}"
 
     def unparse_Dict(self, node: ast.Dict, indent: int = 0) -> str:
-        dict_values = ",".join(
-            self.unparse(key) + ":" + self.unparse(value) for key, value in node.items
-        )
+        dict_values = ",".join(self.unparse(key) + ":" + self.unparse(value) for key, value in node.items)
         return f"{self.sep*indent}{{{dict_values}}}"
 
     def unparse_DictComp(self, node: ast.DictComp, indent: int = 0) -> str:
@@ -343,9 +316,7 @@ class Unparser:
             + f"{self.unparse_block(node.body, indent)}"
         )
         if node.orelse:
-            stmnt += (
-                f"\n{self.sep*indent}else:{self.unparse_block(node.orelse, indent)}"
-            )
+            stmnt += f"\n{self.sep*indent}else:{self.unparse_block(node.orelse, indent)}"
         return stmnt
 
     def unparse_IfExp(self, node: ast.IfExp, indent: int = 0) -> str:
@@ -370,8 +341,9 @@ class Unparser:
         return self.unparse(node.value)
 
     def unparse_JoinedStr(self, node: ast.JoinedStr, indent: int = 0) -> str:
-        unparsed_values = map(lambda x: self.unparse(x).strip("'"), node.values)
-        return f"{self.sep*indent}f'{''.join(unparsed_values)}'"
+        unparsed_values: List[str] = list(map(lambda x: self.unparse(x).strip("'"), node.values))
+        quotes = "'''" if any("\n" in x for x in unparsed_values) else "'"
+        return f"{self.sep*indent}f{quotes}{''.join(unparsed_values)}{quotes}"
 
     def unparse_Keyword(self, node: ast.Keyword, indent: int = 0) -> str:
         return f"{node.arg}={self.unparse(node.value)}"
@@ -420,7 +392,9 @@ class Unparser:
         raise Python2CodeDetected(node.__class__.__name__)
 
     def unparse_Return(self, node: ast.Return, indent: int = 0) -> str:
-        return f"{self.sep*indent}return{self.space_after_kw(node.value)}{self.unparse(node.value)}"
+        if node.value is not None:
+            return f"{self.sep*indent}return{self.space_after_kw(node.value)}{self.unparse(node.value)}"
+        return f"{self.sep*indent}return"
 
     def unparse_Set(self, node: ast.Set, indent: int = 0) -> str:
         return f"{self.sep*indent}{{{','.join(map(self.unparse, node.elts))}}}"
@@ -449,13 +423,11 @@ class Unparser:
         return f"*{self.unparse(node.value)}"
 
     def unparse_Subscript(self, node: ast.Subscript, indent: int = 0) -> str:
-        return (
-            f"{self.sep*indent}{self.unparse(node.value)}[{self.unparse(node.slice)}]"
-        )
+        return f"{self.sep*indent}{self.unparse(node.value)}[{self.unparse(node.slice)}]"
 
     def unparse_TryExcept(self, node: ast.TryExcept, indent: int = 0) -> str:
         stmnt = f"{self.sep*indent}try:{self.unparse_block(node.body)}\n"
-        stmnt += "\n".join(map(self.unparse, node.handlers))
+        stmnt += "\n".join(map(lambda handler: self.unparse(handler, indent), node.handlers))
         if node.orelse:
             return f"{stmnt}\nelse:{self.unparse_block(node.orelse)}"
         return stmnt
@@ -463,7 +435,7 @@ class Unparser:
     def unparse_TryFinally(self, node: ast.TryFinally, indent: int = 0) -> str:
         stmnt = f"{self.sep*indent}try:{self.unparse_block(node.body)}"
         if node.finalbody:
-            return f"{stmnt}\nfinally:{self.unparse_block(node.finalbody)}"
+            return f"{stmnt}\n{self.sep*indent}finally:{self.unparse_block(node.finalbody)}"
         return stmnt
 
     def unparse_Tuple(self, node: ast.Tuple, indent: int = 0) -> str:
@@ -479,15 +451,10 @@ class Unparser:
         pass
 
     def unparse_While(self, node: ast.While, indent: int = 0) -> str:
-        stmnt = (
-            f"{self.sep*indent}while {self.unparse(node.test)}:"
-            + self.unparse_block(node.body, indent)
-        )
+        stmnt = f"{self.sep*indent}while {self.unparse(node.test)}:" + self.unparse_block(node.body, indent)
 
         if node.orelse:
-            stmnt += (
-                f"\n{self.sep*indent}else:{self.unparse_block(node.orelse, indent)}"
-            )
+            stmnt += f"\n{self.sep*indent}else:{self.unparse_block(node.orelse, indent)}"
 
         return stmnt
 
@@ -524,6 +491,8 @@ class Unparser:
                 ast.FunctionDef,
                 ast.For,
                 ast.If,
+                ast.TryExcept,
+                ast.TryFinally,
                 ast.With,
                 ast.While,
             ]

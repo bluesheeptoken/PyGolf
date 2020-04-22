@@ -11,9 +11,7 @@ _builtin_methods = __builtins__.keys()  # type: ignore
 
 class RenameMethodOptimizer(Optimizer):
     def __init__(self, name_finder: NameFinder) -> None:
-        self.standard_methods: Dict[str, int] = {
-            f: 0 for f in _builtin_methods if f.islower()
-        }
+        self.standard_methods: Dict[str, int] = {f: 0 for f in _builtin_methods if f.islower()}
         self.name_finder: NameFinder = name_finder
 
     def add_name(self, name: str) -> None:

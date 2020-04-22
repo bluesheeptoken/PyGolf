@@ -12,9 +12,7 @@ class Pygolfer:
 
         for phase in all_phases:
             for rule in phase.generate_rules(module):
-                ast.MANAGER.register_transform(
-                    rule.on_node, rule.transform, rule.predicate
-                )
+                ast.MANAGER.register_transform(rule.on_node, rule.transform, rule.predicate)
 
             module = ast.parse(unparser.unparse(module))
 
