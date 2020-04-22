@@ -2,7 +2,6 @@ import unittest
 
 from astroid import extract_node, parse
 
-from pygolf.errors.should_be_reduced_exception import ShouldBeReducedException
 from pygolf.unparser import Unparser
 
 
@@ -13,9 +12,7 @@ class TestUnparser(unittest.TestCase):
     def test_unparse_for(self):
         async_for = extract_node("async for thing in things:pass")
 
-        self.assertEqual(
-            self.unparser.unparse_for(async_for, True), "async for thing in things:pass"
-        )
+        self.assertEqual(self.unparser.unparse_for(async_for, True), "async for thing in things:pass")
 
         for_def = extract_node(
             """
@@ -24,9 +21,7 @@ for thing in things:
 """
         )
 
-        self.assertEqual(
-            self.unparser.unparse_for(for_def, False), "for thing in things:pass"
-        )
+        self.assertEqual(self.unparser.unparse_for(for_def, False), "for thing in things:pass")
 
     def test_unparse_function_def(self):
         async_function_def = extract_node(
@@ -43,29 +38,25 @@ async def func(things):
 
         function_def = extract_node("def func(a, b=2):pass")
         self.assertEqual(
-            self.unparser.unparse_function_def(function_def, False),
-            "def func(a,b=2):pass",
+            self.unparser.unparse_function_def(function_def, False), "def func(a,b=2):pass",
         )
 
     def test_unparse_with(self):
         async_with_node = extract_node("async with open('foo') as bar:pass")
 
         self.assertEqual(
-            self.unparser.unparse_with(async_with_node, True),
-            "async with open('foo') as bar:pass",
+            self.unparser.unparse_with(async_with_node, True), "async with open('foo') as bar:pass",
         )
 
         with_node = extract_node("with open('foo') as bar, foo:pass")
 
         self.assertEqual(
-            self.unparser.unparse_with(with_node, False),
-            "with open('foo') as bar,foo:pass",
+            self.unparser.unparse_with(with_node, False), "with open('foo') as bar,foo:pass",
         )
 
-    def test_unparse_AnnAssign(self):
-        node = extract_node("a: int = 1")
-        with self.assertRaises(ShouldBeReducedException):
-            self.unparser.unparse_AnnAssign(node)
+    # def test_unparse_AnnAssign(self):
+    #     node = extract_node("a: int = 1")
+    #     self.assertEqual(self.unparser.unparse_AnnAssign(node), "a=1")
 
     def test_unparse_Arguments(self):
         node = extract_node("def f(foo, bar=None): pass").args
@@ -73,23 +64,17 @@ async def func(things):
 
     def test_unparse_Assert(self):
         assert_with_message = extract_node("assert True, 'message'")
-        self.assertEqual(
-            self.unparser.unparse_Assert(assert_with_message), "assert True,'message'"
-        )
+        self.assertEqual(self.unparser.unparse_Assert(assert_with_message), "assert True,'message'")
 
         assert_without_message = extract_node("assert True")
-        self.assertEqual(
-            self.unparser.unparse_Assert(assert_without_message), "assert True"
-        )
+        self.assertEqual(self.unparser.unparse_Assert(assert_without_message), "assert True")
 
     def test_unparse_Assign(self):
         assign_several = extract_node("*a, b = 2, 3, 5")
         self.assertEqual(self.unparser.unparse_Assign(assign_several), "*a,b=2,3,5")
 
         assign_single_starred = extract_node("*a, = 2, 3, 5")
-        self.assertEqual(
-            self.unparser.unparse_Assign(assign_single_starred), "*a,=2,3,5"
-        )
+        self.assertEqual(self.unparser.unparse_Assign(assign_single_starred), "*a,=2,3,5")
 
         assign_single_not_starred = extract_node("a = 2")
         self.assertEqual(self.unparser.unparse_Assign(assign_single_not_starred), "a=2")
@@ -116,25 +101,16 @@ async def func(things):
         self.assertEqual(self.unparser.unparse_AugAssign(node), "a*=2")
 
     def test_unparse_BinOp(self):
-        self.assertEqual(
-            self.unparser.unparse_BinOp(extract_node("4*(a + 2)")), "4*(a+2)"
-        )
+        self.assertEqual(self.unparser.unparse_BinOp(extract_node("4*(a + 2)")), "4*(a+2)")
+
+        self.assertEqual(self.unparser.unparse_BinOp(extract_node("(1 + 2) + 3")), "1+2+3")
+
+        self.assertEqual(self.unparser.unparse_BinOp(extract_node("(1 + 2) * 3")), "(1+2)*3")
+
+        self.assertEqual(self.unparser.unparse_BinOp(extract_node("'a'*(5//n)")), "'a'*(5//n)")
 
         self.assertEqual(
-            self.unparser.unparse_BinOp(extract_node("(1 + 2) + 3")), "1+2+3"
-        )
-
-        self.assertEqual(
-            self.unparser.unparse_BinOp(extract_node("(1 + 2) * 3")), "(1+2)*3"
-        )
-
-        self.assertEqual(
-            self.unparser.unparse_BinOp(extract_node("'a'*(5//n)")), "'a'*(5//n)"
-        )
-
-        self.assertEqual(
-            self.unparser.unparse_BinOp(extract_node("might_generate_string()*(5//n)")),
-            "might_generate_string()*(5//n)",
+            self.unparser.unparse_BinOp(extract_node("might_generate_string()*(5//n)")), "might_generate_string()*(5//n)",
         )
 
     def test_unparse_BoolOP(self):
@@ -171,16 +147,13 @@ class A(B,C):
         self.assertEqual(self.unparser.unparse_Compare(node), "a<=2>b")
 
         self.assertEqual(
-            self.unparser.unparse_Compare(extract_node("3 not in (1, 2, 3)")),
-            "3 not in(1,2,3)",
+            self.unparser.unparse_Compare(extract_node("3 not in (1, 2, 3)")), "3 not in(1,2,3)",
         )
 
     def test_unparse_Comprehension(self):
         node = extract_node("[i for i in range(10) if i < 5 if i > 8]").generators[0]
 
-        self.assertEqual(
-            self.unparser.unparse_Comprehension(node), "for i in range(10)if i<5 if i>8"
-        )
+        self.assertEqual(self.unparser.unparse_Comprehension(node), "for i in range(10)if i<5 if i>8")
 
     def test_unparse_Const(self):
         const = extract_node("2")
@@ -191,13 +164,21 @@ class A(B,C):
 
         self.assertEqual(self.unparser.unparse_Const(string_const), "'golf'")
 
-    def test_unparse_Decorators(self):
-        node = extract_node(
-            "@property\n@decoratorsWithArguments(2, a=3)\ndef f():pass"
-        ).decorators
+        long_string_const = extract_node(
+            """a='''go
+lf'''"""
+        ).value
+
         self.assertEqual(
-            self.unparser.unparse_Decorators(node),
-            "@property\n@decoratorsWithArguments(2,a=3)",
+            self.unparser.unparse_Const(long_string_const),
+            """'''go
+lf'''""",
+        )
+
+    def test_unparse_Decorators(self):
+        node = extract_node("@property\n@decoratorsWithArguments(2, a=3)\ndef f():pass").decorators
+        self.assertEqual(
+            self.unparser.unparse_Decorators(node), "@property\n@decoratorsWithArguments(2,a=3)",
         )
 
     def test_unparse_Delete(self):
@@ -209,12 +190,9 @@ class A(B,C):
         self.assertEqual(self.unparser.unparse_Dict(node), "{1:1,'a':'b'}")
 
     def test_unparse_DictComp(self):
-        node = extract_node(
-            "{k: 2 for k, _ in things if k < 5 for things in meta_things}"
-        )
+        node = extract_node("{k: 2 for k, _ in things if k < 5 for things in meta_things}")
         self.assertEqual(
-            self.unparser.unparse_DictComp(node),
-            "{k:2for k,_ in things if k<5for things in meta_things}",
+            self.unparser.unparse_DictComp(node), "{k:2for k,_ in things if k<5for things in meta_things}",
         )
 
     def test_unparse_ExceptHandler(self):
@@ -226,26 +204,31 @@ except Exception as error:
     pass
 """
         ).handlers[0]
-        self.assertEqual(
-            self.unparser.unparse_ExceptHandler(node), "except Exception as error:pass"
-        )
+        self.assertEqual(self.unparser.unparse_ExceptHandler(node), "except Exception as error:pass")
 
     def test_unparse_JoinedStr(self):
         node = extract_node('f"You reduced your code by {percent_characters:.2f} !"')
 
         self.assertEqual(
-            self.unparser.unparse_JoinedStr(node),
-            "f'You reduced your code by {percent_characters:.2f} !'",
+            self.unparser.unparse_JoinedStr(node), "f'You reduced your code by {percent_characters:.2f} !'",
         )
 
-    def test_unparse_GeneratorExp(self):
         node = extract_node(
-            "(thing for thing in things for things in range(10) for x in y if thing)"
+            """f'''long
+string'''"""
         )
 
         self.assertEqual(
-            self.unparser.unparse_GeneratorExp(node),
-            "(thing for thing in things for things in range(10)for x in y if thing)",
+            self.unparser.unparse_JoinedStr(node),
+            """f'''long
+string'''""",
+        )
+
+    def test_unparse_GeneratorExp(self):
+        node = extract_node("(thing for thing in things for things in range(10) for x in y if thing)")
+
+        self.assertEqual(
+            self.unparser.unparse_GeneratorExp(node), "(thing for thing in things for things in range(10)for x in y if thing)",
         )
 
     def test_unparse_Global(self):
@@ -283,8 +266,7 @@ else:pass""",
         node = extract_node("from ...module import foo as foo, bar as bar")
 
         self.assertEqual(
-            self.unparser.unparse_ImportFrom(node),
-            "from ...module import foo as foo,bar as bar",
+            self.unparser.unparse_ImportFrom(node), "from ...module import foo as foo,bar as bar",
         )
 
     def test_unparse_Lambda(self):
@@ -320,9 +302,7 @@ else:pass""",
 
         raise_call = extract_node("raise Exception('So bad') from x")
 
-        self.assertEqual(
-            self.unparser.unparse_Raise(raise_call), "raise Exception('So bad')from x"
-        )
+        self.assertEqual(self.unparser.unparse_Raise(raise_call), "raise Exception('So bad')from x")
 
     def test_unparse_Return(self):
         node = extract_node("return []")
@@ -385,9 +365,7 @@ else:pass""",
     def test_unparse_TryFinally(self):
         node = extract_node("try:pass\nfinally:pass")
 
-        self.assertEqual(
-            self.unparser.unparse_TryFinally(node), "try:pass\nfinally:pass"
-        )
+        self.assertEqual(self.unparser.unparse_TryFinally(node), "try:pass\nfinally:pass")
 
     def test_unparse_UnaryOp(self):
         node = extract_node("-3")
