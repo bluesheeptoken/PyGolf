@@ -65,17 +65,11 @@ def parse_arguments(argv: Optional[Sequence[str]] = None) -> Namespace:
     )
 
     code_input_group.add_argument(
-        "-i",
-        "--input_file",
-        help="Shorten code from file code and print it to stdout or to --output_file",
-        type=str,
+        "-i", "--input_file", help="Shorten code from file code and print it to stdout or to --output_file", type=str,
     )
 
     parser.add_argument(
-        "-o",
-        "--output_file",
-        help="Outputs the code to given output_file or stdout by default",
-        nargs="?",
+        "-o", "--output_file", help="Outputs the code to given output_file or stdout by default", nargs="?",
     )
 
     return parser.parse_args(argv)

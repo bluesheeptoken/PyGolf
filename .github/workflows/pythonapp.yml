@@ -27,8 +27,8 @@ jobs:
     - name: Lint with flake8 black isort
       run: make check-lint
     - name: Check static types with mypy
-      run: mypy pygolf
+      run: make mypy
     - name: Test with pytest
-      run: pytest
+      run: make test
     - name: check if code examples files are up to date
       run: python scripts/shorten_code.py --check

@@ -16,9 +16,7 @@ class Example:
         self.shorten_path: str = re.sub("\\.py$", self.shorten_suffix, path)
 
     def shorten_code(self, pygolfer: Pygolfer):
-        with open(self.path, "r") as input_fp, open(
-            self.shorten_path, "w"
-        ) as output_fp:
+        with open(self.path, "r") as input_fp, open(self.shorten_path, "w") as output_fp:
             code = input_fp.read()
             code_shortened = pygolfer.shorten(code)
             output_fp.write(code_shortened)
@@ -26,9 +24,7 @@ class Example:
     def check_shorten_code(self, pygolfer: Pygolfer) -> bool:
         if not os.path.exists(self.shorten_path):
             return False
-        with open(self.path, "r") as input_fp, open(
-            self.shorten_path, "r"
-        ) as output_fp:
+        with open(self.path, "r") as input_fp, open(self.shorten_path, "r") as output_fp:
             code = input_fp.read()
             code_shortened = pygolfer.shorten(code)
             code_previously_shortened = output_fp.read()
@@ -39,17 +35,11 @@ def parse_arguments(argv: Optional[Sequence[str]] = None) -> Namespace:
     parser: ArgumentParser = ArgumentParser(description="PyGolf shortens a Python code")
     action_input = parser.add_mutually_exclusive_group()
     action_input.add_argument(
-        "-c",
-        "--check",
-        help="Check whether the `_shorten` files are generated correctly",
-        action="store_true",
+        "-c", "--check", help="Check whether the `_shorten` files are generated correctly", action="store_true",
     )
 
     action_input.add_argument(
-        "-g",
-        "--generate",
-        help="Generate shorten_code of examples in folder `code_example`",
-        action="store_true",
+        "-g", "--generate", help="Generate shorten_code of examples in folder `code_example`", action="store_true",
     )
     return parser.parse_args(argv)
 
@@ -74,17 +64,11 @@ def main(argv: Optional[Sequence[str]] = None):
             example.shorten_code(pygolfer)
             print(f"Shortened code {example.path}")
     elif arguments.check:
-        examples_not_shortened_correctly = [
-            example for example in examples if not example.check_shorten_code(pygolfer)
-        ]
+        examples_not_shortened_correctly = [example for example in examples if not example.check_shorten_code(pygolfer)]
         if examples_not_shortened_correctly:
             print(
                 "The following examples have not been shortened correctly:",
-                {
-                    ", ".join(
-                        example.path for example in examples_not_shortened_correctly
-                    )
-                },
+                {", ".join(example.path for example in examples_not_shortened_correctly)},
             )
             sys.exit(1)
         else:
