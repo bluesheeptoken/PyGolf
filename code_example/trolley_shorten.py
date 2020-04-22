@@ -1,6 +1,4 @@
 V=input
-import math
-import sys
 n=int(V())
 Z=float('inf')
 Y=0

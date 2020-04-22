@@ -1,6 +1,3 @@
-import math
-import sys
-
 n = int(input())
 min_val = float("inf")
 min_path = 0
