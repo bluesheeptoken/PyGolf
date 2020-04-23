@@ -20,4 +20,4 @@ lint:
 	isort
 
 generate-examples:
-	python scripts/shorten_code.py --generate
+	python3 scripts/shorten_code.py --generate
