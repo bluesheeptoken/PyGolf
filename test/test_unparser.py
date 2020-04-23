@@ -224,6 +224,10 @@ string'''"""
 string'''""",
         )
 
+        node = extract_node("""f"{'2'}\"""")
+
+        self.assertEqual(self.unparser.unparse_JoinedStr(node), """f'{"2"}'""")
+
     def test_unparse_GeneratorExp(self):
         node = extract_node("(thing for thing in things for things in range(10) for x in y if thing)")
 
