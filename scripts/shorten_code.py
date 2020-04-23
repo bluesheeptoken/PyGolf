@@ -30,6 +30,9 @@ class Example:
             code_previously_shortened = output_fp.read()
         return code_shortened == code_previously_shortened
 
+    def __repr__(self) -> str:
+        return os.path.basename(self.path)
+
 
 def parse_arguments(argv: Optional[Sequence[str]] = None) -> Namespace:
     parser: ArgumentParser = ArgumentParser(description="PyGolf shortens a Python code")
@@ -66,10 +69,11 @@ def main(argv: Optional[Sequence[str]] = None):
     elif arguments.check:
         examples_not_shortened_correctly = [example for example in examples if not example.check_shorten_code(pygolfer)]
         if examples_not_shortened_correctly:
-            print(
-                "The following examples have not been shortened correctly:",
-                {", ".join(example.path for example in examples_not_shortened_correctly)},
-            )
+            print("The following examples have not been shortened correctly:")
+            for example in examples_not_shortened_correctly:
+                print("Expected, ", example, ":", sep="")
+                with open(example.path, "r") as fp:
+                    print(pygolfer.shorten(fp.read()))
             sys.exit(1)
         else:
             print("All examples have been shortened.")
