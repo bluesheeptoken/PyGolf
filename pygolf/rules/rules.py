@@ -170,6 +170,9 @@ class RenameAssignName(AstroidRule):
     def __repr__(self) -> str:
         return f"RenameAssignName(old_name:{self.old_name}, new_name:{self.new_name})"
 
+    def __eq__(self, other) -> bool:
+        return isinstance(other, RenameAssignName) and other.new_name == self.new_name and other.old_name == self.old_name
+
 
 class RenameCall(AstroidRule):
     def __init__(self, old_name: str, new_name: str) -> None:
@@ -206,3 +209,6 @@ class RenameName(AstroidRule):
 
     def __repr__(self) -> str:
         return f"RenameName(old_name:{self.old_name}, new_name:{self.new_name})"
+
+    def __eq__(self, other) -> bool:
+        return isinstance(other, RenameName) and other.new_name == self.new_name and other.old_name == self.old_name
