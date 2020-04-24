@@ -11,3 +11,4 @@ class AlwaysApplyPhase(Phase):
     def generate_rules(self, ast: NodeNG) -> Iterator[AstroidRule]:
         yield FormatToFString()
         yield RangeForToComprehensionFor()
+        yield ComprehensionForAssignToMapAssign()
