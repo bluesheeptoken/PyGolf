@@ -42,6 +42,13 @@ class TestFormatToFString(unittest.TestCase):
             )
 
 
+class TestListAppend(unittest.TestCase):
+    def test_rule(self):
+        with register_rule(ListAppend()) as transformer:
+            node = transformer.visit(astroid.parse("l.append(2)"))
+            self.assertEqual("l+=[2]", unparser.unparse(node))
+
+
 class TestRangeForToComprehensionFor(unittest.TestCase):
     def test_rule(self):
         with register_rule(RangeForToComprehensionFor()) as transformer:
