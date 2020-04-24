@@ -113,6 +113,8 @@ async def func(things):
             self.unparser.unparse_BinOp(extract_node("might_generate_string()*(5//n)")), "might_generate_string()*(5//n)",
         )
 
+        self.assertEqual(self.unparser.unparse_BinOp(extract_node("a**(2/3)")), "a**(2/3)")
+
     def test_unparse_BoolOP(self):
         node = parse("True and '' and False").body[0].value
 
