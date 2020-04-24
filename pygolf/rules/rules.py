@@ -25,6 +25,38 @@ class AnnAssignToAssign(AstroidRule):
         return f"AnnAssignToAssign"
 
 
+class ComprehensionForAssignToMapAssign(AstroidRule):
+    on_node = ast.Assign
+
+    def predicate(self, node: ast.Assign) -> bool:
+        if not (isinstance(node.targets[0], ast.Tuple) and isinstance(node.value, ast.ListComp)):
+            return False
+        list_comp: ast.ListComp = node.value
+        if not isinstance(list_comp.elt, ast.Call):
+            return False
+        call: ast.Call = list_comp.elt
+        return (
+            len(call.args) == 1
+            and isinstance(call.args[0], ast.Name)
+            and len(list_comp.generators) == 1
+            and call.args[0].name == list_comp.generators[0].target.name
+        )
+
+    def transform(self, node: ast.Assign) -> ast.Assign:
+        new_assign = ast.Assign(parent=node.parent)
+        value = ast.Call(parent=new_assign)
+        iterator = node.value.generators[0].iter
+        iterator.parent = value
+        value.postinit(
+            func=ast.Name(name="map", parent=value), args=[ast.Name(node.value.elt.func.name, parent=value), iterator]
+        )
+        targets = node.targets
+        for target in targets:
+            target.parent = new_assign
+        new_assign.postinit(targets=node.targets, value=value)
+        return new_assign
+
+
 class DefineRenameCall(AstroidRule):
     def __init__(self, old_name: str, new_name: str) -> None:
         self.new_name: str = new_name

@@ -9,6 +9,18 @@ from pygolf.unparser import Unparser
 unparser = Unparser()
 
 
+class TestComprehensionForAssignToMapAssign(unittest.TestCase):
+    def test_rule(self):
+        with register_rule(ComprehensionForAssignToMapAssign()) as transformer:
+            node = transformer.visit(astroid.parse("x,y=[int(j) for j in input().split()]"))
+            unparsed = unparser.unparse(node)
+            self.assertEqual(unparsed, "x,y=map(int,input().split())")
+
+            node = transformer.visit(astroid.parse("x,y=[f(j, 1) for j in input().split()]"))
+            unparsed = unparser.unparse(node)
+            self.assertEqual(unparsed, "x,y=[f(j,1)for j in input().split()]")
+
+
 class TestDefineRenameCall(unittest.TestCase):
     def test_rule(self):
         with register_rule(DefineRenameCall("method_name", "new_method_name")) as transformer:
