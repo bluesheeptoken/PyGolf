@@ -4,13 +4,13 @@
 
 Issues are very valuable to this project.
 
-* Ideas are a valuable source of contributions others can make
-* Problems show where this project is lacking
-* With a question you show where contributors can improve the user experience
+* Ideas are a valuable source of contributions others can make.
+* Problems show where this project is lacking.
+* With a question you show where contributors can improve the user experience.
 
 ## Pull Requests
 
-Pull requests are, a great way to get your ideas into this repository.
+Pull requests are a great way to get your ideas into this repository.
 
 ### How to add a `Rule`
 
@@ -28,7 +28,8 @@ For instance, if you need to count the number of times a method is called, you n
 
 ### Tests
 
-To test you can simply use the target `check` in [Makefile](Makefile), it will reproduce every steps in the [github workflow](.github/workflows/pythonapp.yml) to merge a PR.
+To test you can simply use the target `check` in the [Makefile](Makefile).
+It will reproduce every steps in the [github workflow](.github/workflows/pythonapp.yml) to merge a PR.
 
 ## Thanks
 
