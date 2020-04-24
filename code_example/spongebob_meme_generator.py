@@ -8,4 +8,3 @@ for x in _input:
     else:
         ans += x
 print(ans)
-# Manually reduced to 96 characters
