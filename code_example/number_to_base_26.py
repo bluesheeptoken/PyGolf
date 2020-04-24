@@ -7,4 +7,3 @@ if l:
     print(l)
 else:
     print("A")
-# manually reduced to 77 characters

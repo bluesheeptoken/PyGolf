@@ -12,3 +12,4 @@ class AlwaysApplyPhase(Phase):
         yield FormatToFString()
         yield RangeForToComprehensionFor()
         yield ComprehensionForAssignToMapAssign()
+        yield ListAppend()

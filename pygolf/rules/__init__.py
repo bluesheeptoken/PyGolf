@@ -5,6 +5,7 @@ from .version import Version
 __all__: List[str] = [
     "AstroidRule",
     "ComprehensionForAssignToMapAssign",
+    "ListAppend",
     "DefineRenameCall",
     "FormatToFString",
     "RangeForToComprehensionFor",

@@ -123,6 +123,25 @@ class FormatToFString(AstroidRule):
         return "FormatToFString"
 
 
+class ListAppend(AstroidRule):
+    on_node = ast.Call
+
+    def transform(self, node: ast.Call) -> ast.AugAssign:
+        new_node = ast.AugAssign(op="+=")
+        new_value = ast.List(parent=new_node)
+        new_arg = node.args[0]
+        new_arg.parent = new_value
+        new_value.postinit(elts=[new_arg])
+        new_node.postinit(target=ast.AssignName(name=node.func.expr.name, parent=new_node), value=new_value)
+        return new_node
+
+    def predicate(self, node: ast.Call) -> bool:
+        return isinstance(node.func, ast.Attribute) and node.func.attrname == "append"
+
+    def __repr__(self):
+        return "ListAppend"
+
+
 class RangeForToComprehensionFor(AstroidRule):
     on_node = ast.For
 
