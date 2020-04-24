@@ -88,6 +88,9 @@ class DefineRenameCall(AstroidRule):
     def __repr__(self) -> str:
         return f"DefineRenameCall(old_name:{self.old_name}, new_name:{self.new_name})"
 
+    def __eq__(self, other) -> bool:
+        return isinstance(other, DefineRenameCall) and other.new_name == self.new_name and other.old_name == self.old_name
+
 
 class FormatToFString(AstroidRule):
     on_node = ast.Call
@@ -192,6 +195,9 @@ class RenameCall(AstroidRule):
 
     def __repr__(self) -> str:
         return f"RenameCall(old_name:{self.old_name}, new_name:{self.new_name})"
+
+    def __eq__(self, other) -> bool:
+        return isinstance(other, RenameCall) and other.new_name == self.new_name and other.old_name == self.old_name
 
 
 class RenameName(AstroidRule):
