@@ -447,7 +447,11 @@ class Unparser:
         return self.sep * indent + core
 
     def unparse_UnaryOp(self, node: ast.UnaryOp, indent: int = 0) -> str:
-        return f"{self.sep*indent}{node.op}{self.unparse(node.operand)}"
+        return (
+            f"{self.sep*indent}{node.op}"
+            f"{' ' if node.op == 'not' and not self._can_follow_reserved_keywords(node.operand) else ''}"
+            f"{self.unparse(node.operand)}"
+        )
 
     def unparse_Unknown(self, node: ast.Unknown, indent: int = 0) -> str:
         pass
