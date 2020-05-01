@@ -39,8 +39,8 @@ class Unparser:
     def unparse_for(self, for_node: Union[ast.AsyncFor, ast.For], is_async: bool, indent: int = 0) -> str:
         for_stmnt = (
             f"{self.sep*indent}{'async ' if is_async else ''}"
-            + f"for {self.unparse(for_node.target)} in{self.space_after_kw(for_node.iter)}"
-            + f"{self.unparse(for_node.iter)}:{self.unparse_block(for_node.body, indent)}"
+            f"for {self.unparse(for_node.target)} in{self.space_after_kw(for_node.iter)}"
+            f"{self.unparse(for_node.iter)}:{self.unparse_block(for_node.body, indent)}"
         )
 
         if for_node.orelse:
@@ -65,8 +65,7 @@ class Unparser:
     def unparse_with(self, node: Union[ast.AsyncWith, ast.With], is_async: bool, indent: int = 0) -> str:
         return (
             f"{self.sep*indent}{'async ' if is_async else ''}with "
-            + f"{','.join(map(self.unparse_with_item, node.items))}:"
-            + self.unparse_block(node.body, indent)
+            f"{','.join(map(self.unparse_with_item, node.items))}:" + self.unparse_block(node.body, indent)
         )
 
     def unparse_with_item(self, node: List[Tuple[NodeNG, Optional[ast.AssignName]]]) -> str:
@@ -306,7 +305,7 @@ class Unparser:
     def unparse_GeneratorExp(self, node: ast.GeneratorExp, indent: int = 0) -> str:
         return (
             f"{self.sep*indent}({self.unparse(node.elt)}{self.space_before_kw(node.elt)}"
-            + f"{self.unparse_comprehension_generators(node.generators)})"
+            f"{self.unparse_comprehension_generators(node.generators)})"
         )
 
     def unparse_Global(self, node: ast.Global, indent: int = 0) -> str:
@@ -315,7 +314,7 @@ class Unparser:
     def unparse_If(self, node: ast.If, indent: int = 0) -> str:
         stmnt = (
             f"{self.sep*indent}if{self.space_after_kw(node.test)}{self.unparse(node.test)}:"
-            + f"{self.unparse_block(node.body, indent)}"
+            f"{self.unparse_block(node.body, indent)}"
         )
         if node.orelse:
             stmnt += f"\n{self.sep*indent}else:{self.unparse_block(node.orelse, indent)}"
@@ -324,9 +323,9 @@ class Unparser:
     def unparse_IfExp(self, node: ast.IfExp, indent: int = 0) -> str:
         return (
             f"{self.sep*indent}{self.unparse(node.body)}{self.space_before_kw(node.body)}"
-            + f"if{self.space_after_kw(node.test)}{self.unparse(node.test)}"
-            + f"{self.space_after_kw(node.test)}else"
-            + f"{self.space_after_kw(node.orelse)}{self.unparse(node.orelse)}"
+            f"if{self.space_after_kw(node.test)}{self.unparse(node.test)}"
+            f"{self.space_after_kw(node.test)}else"
+            f"{self.space_after_kw(node.orelse)}{self.unparse(node.orelse)}"
         )
 
     def unparse_Import(self, node: ast.Import, indent: int = 0) -> str:
@@ -335,8 +334,8 @@ class Unparser:
     def unparse_ImportFrom(self, node: ast.ImportFrom, indent: int = 0) -> str:
         return (
             f"{self.sep*indent}from "
-            + f"{'.'*node.level if node.level is not None else ''}{node.modname} "
-            + f"import {','.join(map(self.unparse_alias_import, node.names))}"
+            f"{'.'*node.level if node.level is not None else ''}{node.modname} "
+            f"import {','.join(map(self.unparse_alias_import, node.names))}"
         )
 
     def unparse_Index(self, node: ast.Index, indent: int = 0) -> str:
@@ -359,7 +358,7 @@ class Unparser:
     def unparse_ListComp(self, node: ast.ListComp, indent: int = 0) -> str:
         return (
             f"{self.sep*indent}[{self.unparse(node.elt)}{self.space_before_kw(node.elt)}"
-            + f"{self.unparse_comprehension_generators(node.generators)}]"
+            f"{self.unparse_comprehension_generators(node.generators)}]"
         )
 
     def unparse_Module(self, node: ast.Module, indent: int = 0) -> str:
@@ -404,7 +403,7 @@ class Unparser:
     def unparse_SetComp(self, node: ast.SetComp, indent: int = 0) -> str:
         return (
             f"{self.sep*indent}{{{self.unparse(node.elt)}{self.space_before_kw(node.elt)}"
-            + f"{self.unparse_comprehension_generators(node.generators)}}}"
+            f"{self.unparse_comprehension_generators(node.generators)}}}"
         )
 
     def unparse_Slice(self, node: ast.Slice, indent: int = 0) -> str:
@@ -447,7 +446,11 @@ class Unparser:
         return self.sep * indent + core
 
     def unparse_UnaryOp(self, node: ast.UnaryOp, indent: int = 0) -> str:
-        return f"{self.sep*indent}{node.op}{self.unparse(node.operand)}"
+        return (
+            f"{self.sep*indent}{node.op}"
+            f"{' ' if node.op == 'not' and not self._can_follow_reserved_keywords(node.operand) else ''}"
+            f"{self.unparse(node.operand)}"
+        )
 
     def unparse_Unknown(self, node: ast.Unknown, indent: int = 0) -> str:
         pass

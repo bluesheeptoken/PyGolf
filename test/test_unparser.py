@@ -378,6 +378,14 @@ else:pass""",
 
         self.assertEqual(self.unparser.unparse_UnaryOp(node), "-3")
 
+        node = extract_node("not []")
+
+        self.assertEqual(self.unparser.unparse_UnaryOp(node), "not[]")
+
+        node = extract_node("not a")
+
+        self.assertEqual(self.unparser.unparse_UnaryOp(node), "not a")
+
     def test_unparse_While(self):
         while_else = extract_node(
             """while True:pass

@@ -27,8 +27,11 @@ def read_input_code(arguments: Namespace) -> str:
         return pyperclip.paste()  # type: ignore
     elif arguments.code is not None:
         return arguments.code  # type: ignore
-    with open(arguments.input_file) as fp:
-        return "".join(fp.readlines())
+    elif arguments.input_file is not None:
+        with open(arguments.input_file) as fp:
+            return "".join(fp.readlines())
+    print("Please, provide at least an argument to read input code.")
+    exit(1)
 
 
 def output_code(arguments: Namespace, old_code: str, new_code: Optional[str]) -> None:
