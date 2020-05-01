@@ -11,31 +11,30 @@ from pygolf.pygolfer import Pygolfer
 class Example:
     shorten_suffix: str = "_shorten.py"
 
-    def __init__(self, path):
+    def __init__(self, path: str, pygolfer: Pygolfer):
         self.path: str = path
-        self.shorten_path: str = re.sub("\\.py$", self.shorten_suffix, path)
-        self.example_length: Optional[int] = None
-        self.example_shortened_length: Optional[int] = None
+        self.path_shortened_code: str = re.sub("\\.py$", self.shorten_suffix, path)
         self.name = os.path.basename(path).split(".")[0]
+        with open(self.path, "r") as input_fp:
+            self.code: str = input_fp.read()
+        self.shortened_code: str = pygolfer.shorten(self.code)
 
-    def shorten_code(self, pygolfer: Pygolfer):
-        with open(self.path, "r") as input_fp, open(self.shorten_path, "w") as output_fp:
-            code = input_fp.read()
-            self.example_length = len(code)
-            code_shortened = pygolfer.shorten(code)
-            self.example_shortened_length = len(code_shortened)
-            output_fp.write(code_shortened)
+    def shorten_code(self) -> None:
+        with open(self.path_shortened_code, "w") as output_fp:
+            output_fp.write(self.shortened_code)
 
-    def check_shorten_code(self, pygolfer: Pygolfer) -> bool:
-        if not os.path.exists(self.shorten_path):
+    def check_shorten_code(self) -> bool:
+        if not os.path.exists(self.path_shortened_code):
             return False
-        with open(self.path, "r") as input_fp, open(self.shorten_path, "r") as output_fp:
-            code = input_fp.read()
-            self.example_length = len(code)
-            code_shortened = pygolfer.shorten(code)
-            self.example_shortened_length = len(code_shortened)
+        with open(self.path_shortened_code, "r") as output_fp:
             code_previously_shortened = output_fp.read()
-        return code_shortened == code_previously_shortened
+        return self.shortened_code == code_previously_shortened
+
+    def code_length(self) -> int:
+        return len(self.code)
+
+    def shortened_code_length(self) -> int:
+        return len(self.shortened_code)
 
     def __repr__(self) -> str:
         return os.path.basename(self.path)
@@ -60,33 +59,30 @@ def to_markdown_line(line: Iterable[str]):
 
 def main(argv: Optional[Sequence[str]] = None):
     arguments = parse_arguments(argv)
-
     examples_path = os.path.join(os.getcwd(), "code_example")
-
     statistics_path = os.path.join(examples_path, "README.md")
-
     examples: List[Example] = []
+    pygolfer = Pygolfer()
 
-    for file in os.listdir(examples_path):
+    for file in sorted(os.listdir(examples_path)):
 
         example_path = os.path.join(examples_path, file)
         if file.endswith(".py") and not file.endswith(Example.shorten_suffix):
-            examples.append(Example(example_path))
-
-    pygolfer = Pygolfer()
+            examples.append(Example(example_path, pygolfer))
 
     statistics: List[str] = [
         to_markdown_line(("example name", "example length", "example shortened length")),
         to_markdown_line(["---"] * 3),
     ]
 
+    for example in examples:
+        statistics.append(to_markdown_line(map(str, (example.name, example.code_length(), example.shortened_code_length()))))
+
     if arguments.generate:
         for example in examples:
-            example.shorten_code(pygolfer)
+            example.shorten_code()
             print(f"Shortened code {example.path}")
-            statistics.append(
-                to_markdown_line(map(str, (example.name, example.example_length, example.example_shortened_length)))
-            )
+
         with open(statistics_path, "w") as fp:
             fp.write("\n".join(statistics))
         print("Statistics generated")
@@ -94,25 +90,27 @@ def main(argv: Optional[Sequence[str]] = None):
     elif arguments.check:
         examples_not_shortened_correctly: List[Example] = []
         for example in examples:
-            if not example.check_shorten_code(pygolfer):
+            if not example.check_shorten_code():
                 examples_not_shortened_correctly.append(example)
-            statistics.append(
-                to_markdown_line(map(str, (example.name, example.example_length, example.example_shortened_length)))
-            )
+
+        if not os.path.exists(statistics_path):
+            print("statistics have not been generated")
+            exit(1)
 
         with open(statistics_path, "r") as fp:
             generated_statistics = fp.read()
 
         if examples_not_shortened_correctly:
-            print("The following examples have not been shortened correctly:")
+            print("The following example(s) have not been shortened correctly:")
             for example in examples_not_shortened_correctly:
                 print("Expected, ", example, ":", sep="")
                 with open(example.path, "r") as fp:
                     print(pygolfer.shorten(fp.read()))
-            sys.exit(1)
+            exit(1)
         elif generated_statistics != "\n".join(statistics):
             print("Statistics have not been generated")
             print("Expected statistics", "\n" + "\n".join(statistics))
+            exit(1)
         else:
             print("All examples and statistics have been shortened.")
 
