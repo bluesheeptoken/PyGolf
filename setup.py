@@ -9,7 +9,7 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="pygolf",
-    version="1.0.0",
+    version="1.0.1",
     description="An automatic python code shortener",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -17,7 +17,7 @@ setup(
     author="Bluesheeptoken",
     # For a list of valid classifiers, see https://pypi.org/classifiers/
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "Topic :: Software Development :: Build Tools",
         "License :: OSI Approved :: MIT License",
@@ -27,7 +27,7 @@ setup(
     ],
     license="MIT",
     packages=find_packages(exclude=["test"]),
-    keywords="golfcode reduce golf",
+    keywords="golfcode shorten_code golf",
     python_requires=">=3.6, <4",
     install_requires=["argparse", "astroid", "pyperclip"],
     entry_points={"console_scripts": ["pygolf = pygolf.__main__:main"]},
