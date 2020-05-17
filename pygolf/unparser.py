@@ -75,7 +75,10 @@ class Unparser:
         return f"{self.unparse(item)} as {self.unparse(alias)}"
 
     def unparse_AnnAssign(self, node: ast.AnnAssign, indent: int = 0) -> str:
-        return f"{self.sep*indent}{node.target.name}={self.unparse(node.value)}"  # ignore annotation
+        if node.value is not None:
+            name = node.target.name if hasattr(node.target, "name") else node.target.attrname
+            return f"{self.sep*indent}{name}={self.unparse(node.value)}"  # ignore annotation
+        return f"{self.sep*indent}{node.target.name}"
 
     def unparse_Arguments(self, node: ast.Arguments, indent: int = 0) -> str:
         number_non_default_args = len(node.args) - len(node.defaults)
