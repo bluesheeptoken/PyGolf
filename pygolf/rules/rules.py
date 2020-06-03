@@ -78,7 +78,7 @@ class DefineRenameCall(AstroidRule):
         for node in walker.walk(node):
             if (
                 isinstance(node, ast.Assign)
-                and any(n.name == self.new_name for n in node.targets)
+                and any(hasattr(n, "name") and n.name == self.new_name for n in node.targets)
                 and isinstance(node.value, ast.Name)
                 and node.value.name == self.old_name
             ):
