@@ -7,8 +7,9 @@ from pygolf.errors.python_2_code_detected import Python2CodeDetected
 
 
 class Unparser:
-    def __init__(self) -> None:
+    def __init__(self, should_remove_spaces_between_keywords: bool = True) -> None:
         self.sep: str = " "
+        self.should_remove_spaces_between_keywords = should_remove_spaces_between_keywords
 
     def unparse(self, node: NodeNG, indent: int = 0) -> str:
         method = getattr(self, "unparse_" + node.__class__.__name__)
@@ -482,10 +483,14 @@ class Unparser:
         return "" if self._can_be_before_reserved_keywords(node) else " "
 
     def _can_follow_reserved_keywords(self, node):
+        if not self.should_remove_spaces_between_keywords:
+            return False
         unparsed = self.unparse(node)
         return isinstance(unparsed, str) and unparsed[0] in "'\"({["
 
     def _can_be_before_reserved_keywords(self, node):
+        if not self.should_remove_spaces_between_keywords:
+            return False
         unparsed = self.unparse(node)
         return isinstance(unparsed, str) and unparsed[-1] in "'\")}]0123456789"
 
