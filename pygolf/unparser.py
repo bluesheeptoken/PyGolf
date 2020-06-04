@@ -146,8 +146,12 @@ class Unparser:
 
         stmnt = ""
 
-        def unparse_child(node: ast.BinOp, child_node: NodeNG) -> str:
-            if isinstance(child_node, ast.BinOp) and operators_level[node.op] > operators_level[child_node.op]:
+        def unparse_child(node: ast.BinOp, child_node: NodeNG, already_have_parenthesis=False) -> str:
+            if (
+                not already_have_parenthesis
+                and isinstance(child_node, ast.BinOp)
+                and operators_level[node.op] > operators_level[child_node.op]
+            ):
                 return f"({self.unparse(child_node)})"
             return f"{self.unparse(child_node)}"
 
@@ -160,12 +164,12 @@ class Unparser:
                 or (
                     not isinstance(node.left, ast.BinOp) and not isinstance(node.left, ast.Const)
                 )  # Possibly a string is returned, in doubt we have to put parenthesis
+                or (isinstance(node.right, ast.Compare))
             )
-            and node.op == "*"
-            and isinstance(node.right, ast.BinOp)
-            and node.right.op in ("*", "//", "%")
+            and operators_level[node.op] > 4
+            and (isinstance(node.right, ast.BinOp) or isinstance(node.right, ast.Compare))
         ):
-            stmnt += f"({unparse_child(node, node.right)})"
+            stmnt += f"({unparse_child(node, node.right, already_have_parenthesis=True)})"
         else:
             stmnt += unparse_child(node, node.right)
 
