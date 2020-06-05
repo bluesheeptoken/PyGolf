@@ -22,7 +22,7 @@ class AnnAssignToAssign(AstroidRule):
         return True
 
     def __repr__(self) -> str:
-        return f"AnnAssignToAssign"
+        return "AnnAssignToAssign"
 
 
 class ComprehensionForAssignToMapAssign(AstroidRule):
