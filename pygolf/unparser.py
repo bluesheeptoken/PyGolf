@@ -7,8 +7,9 @@ from pygolf.errors.python_2_code_detected import Python2CodeDetected
 
 
 class Unparser:
-    def __init__(self) -> None:
+    def __init__(self, should_remove_spaces_between_keywords: bool = True) -> None:
         self.sep: str = " "
+        self.should_remove_spaces_between_keywords = should_remove_spaces_between_keywords
 
     def unparse(self, node: NodeNG, indent: int = 0) -> str:
         method = getattr(self, "unparse_" + node.__class__.__name__)
@@ -75,7 +76,10 @@ class Unparser:
         return f"{self.unparse(item)} as {self.unparse(alias)}"
 
     def unparse_AnnAssign(self, node: ast.AnnAssign, indent: int = 0) -> str:
-        return f"{self.sep*indent}{node.target.name}={self.unparse(node.value)}"  # ignore annotation
+        if node.value is not None:
+            name = node.target.name if hasattr(node.target, "name") else node.target.attrname
+            return f"{self.sep*indent}{name}={self.unparse(node.value)}"  # ignore annotation
+        return f"{self.sep*indent}{node.target.name}"
 
     def unparse_Arguments(self, node: ast.Arguments, indent: int = 0) -> str:
         number_non_default_args = len(node.args) - len(node.defaults)
@@ -142,8 +146,12 @@ class Unparser:
 
         stmnt = ""
 
-        def unparse_child(node: ast.BinOp, child_node: NodeNG) -> str:
-            if isinstance(child_node, ast.BinOp) and operators_level[node.op] > operators_level[child_node.op]:
+        def unparse_child(node: ast.BinOp, child_node: NodeNG, already_have_parenthesis=False) -> str:
+            if (
+                not already_have_parenthesis
+                and isinstance(child_node, ast.BinOp)
+                and operators_level[node.op] > operators_level[child_node.op]
+            ):
                 return f"({self.unparse(child_node)})"
             return f"{self.unparse(child_node)}"
 
@@ -156,12 +164,12 @@ class Unparser:
                 or (
                     not isinstance(node.left, ast.BinOp) and not isinstance(node.left, ast.Const)
                 )  # Possibly a string is returned, in doubt we have to put parenthesis
+                or (isinstance(node.right, ast.Compare))
             )
-            and node.op == "*"
-            and isinstance(node.right, ast.BinOp)
-            and node.right.op in ("*", "//", "%")
+            and operators_level[node.op] > 4
+            and (isinstance(node.right, ast.BinOp) or isinstance(node.right, ast.Compare))
         ):
-            stmnt += f"({unparse_child(node, node.right)})"
+            stmnt += f"({unparse_child(node, node.right, already_have_parenthesis=True)})"
         else:
             stmnt += unparse_child(node, node.right)
 
@@ -479,10 +487,14 @@ class Unparser:
         return "" if self._can_be_before_reserved_keywords(node) else " "
 
     def _can_follow_reserved_keywords(self, node):
+        if not self.should_remove_spaces_between_keywords:
+            return False
         unparsed = self.unparse(node)
         return isinstance(unparsed, str) and unparsed[0] in "'\"({["
 
     def _can_be_before_reserved_keywords(self, node):
+        if not self.should_remove_spaces_between_keywords:
+            return False
         unparsed = self.unparse(node)
         return isinstance(unparsed, str) and unparsed[-1] in "'\")}]0123456789"
 

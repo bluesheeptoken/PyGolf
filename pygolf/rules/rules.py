@@ -78,7 +78,7 @@ class DefineRenameCall(AstroidRule):
         for node in walker.walk(node):
             if (
                 isinstance(node, ast.Assign)
-                and any(n.name == self.new_name for n in node.targets)
+                and any(hasattr(n, "name") and n.name == self.new_name for n in node.targets)
                 and isinstance(node.value, ast.Name)
                 and node.value.name == self.old_name
             ):
@@ -132,7 +132,8 @@ class ListAppend(AstroidRule):
         new_arg = node.args[0]
         new_arg.parent = new_value
         new_value.postinit(elts=[new_arg])
-        new_node.postinit(target=ast.AssignName(name=node.func.expr.name, parent=new_node), value=new_value)
+        new_node.postinit(target=node.func.expr, value=new_value)
+        new_node.target.parent = new_node
         return new_node
 
     def predicate(self, node: ast.Call) -> bool:
@@ -158,7 +159,9 @@ class RangeForToComprehensionFor(AstroidRule):
         return node  # No optimization here
 
     def predicate(self, node: ast.For) -> bool:
-        is_range_for: bool = isinstance(node.iter, ast.Call) and node.iter.func.name == "range"
+        is_range_for: bool = isinstance(node.iter, ast.Call) and isinstance(
+            node.iter.func, ast.Name
+        ) and node.iter.func.name == "range"
 
         if not is_range_for:
             return False
