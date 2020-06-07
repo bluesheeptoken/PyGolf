@@ -9,7 +9,7 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="pygolf",
-    version="1.0.1",
+    version="1.0.2",
     description="An automatic python code shortener",
     long_description=long_description,
     long_description_content_type="text/markdown",
