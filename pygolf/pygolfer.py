@@ -1,7 +1,7 @@
 from typing import List
 
 import astroid as ast
-from astroid.node_classes import NodeNG
+from astroid.nodes import NodeNG
 
 from pygolf.optimization_phases import all_phases
 from pygolf.rules import AstroidRule
