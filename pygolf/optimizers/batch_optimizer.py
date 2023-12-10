@@ -1,6 +1,6 @@
 from typing import *
 
-from astroid.node_classes import NodeNG
+from astroid.nodes import NodeNG
 
 from pygolf.helper import walker
 from pygolf.name_finder import NameFinder

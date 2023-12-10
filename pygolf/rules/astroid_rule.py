@@ -1,6 +1,6 @@
 import abc
 
-from astroid.node_classes import NodeNG
+from astroid.nodes import NodeNG
 
 from pygolf.rules.version import Version
 

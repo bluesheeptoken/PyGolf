@@ -1,7 +1,7 @@
 from typing import *
 
 import astroid as ast
-from astroid.node_classes import NodeNG
+from astroid.nodes import NodeNG
 
 from pygolf.errors.python_2_code_detected import Python2CodeDetected
 

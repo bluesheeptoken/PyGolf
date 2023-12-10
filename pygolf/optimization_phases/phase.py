@@ -1,7 +1,7 @@
 import abc
 from typing import Iterator
 
-from astroid.node_classes import NodeNG
+from astroid.nodes import NodeNG
 
 from pygolf.rules import AstroidRule
 
