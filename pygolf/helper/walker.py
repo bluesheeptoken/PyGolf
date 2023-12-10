@@ -1,4 +1,4 @@
-from astroid.node_classes import NodeNG
+from astroid.nodes import NodeNG
 
 
 def walk(node: NodeNG):
