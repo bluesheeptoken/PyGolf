@@ -1,6 +1,6 @@
 from typing import Iterator
 
-from astroid.node_classes import NodeNG
+from astroid.nodes import NodeNG
 
 from pygolf.name_finder import NameFinder
 from pygolf.optimizers.batch_optimizer import BatchOptimizer
